@@ -6,40 +6,12 @@
  * Written by Sarah Evans <sarahevans045@gmail.com>
  * Created for Fair Play Renegade-X Community
  */
- 
+
 class FPI_AccessControl extends Rx_AccessControl
 config(RenegadeX);
 
 /** Password to login as moderator.  */
 var private globalconfig string	ModPassword;
-
-function PostBeginPlay()
-{
-	local int i;
-
-	super.PostBeginPlay();
-	//Fix up Steam IDs into right format if they're incorrect.
-	for (i=0; i<AdministratorSteamIDs.Length; ++i)
-		AdministratorSteamIDs[i] = FixSteamID(AdministratorSteamIDs[i]);
-	for (i=0; i<ModeratorSteamIDs.Length; ++i)
-		ModeratorSteamIDs[i] = FixSteamID(ModeratorSteamIDs[i]);
-	SaveConfig();
-}
-
-/** Corrects Steam IDs into the format if the given ID has less than 16 digits, is missing the 0x prefix and/or the hexadecimal is not in capitals. */
-function static string FixSteamID(string ID)
-{
-	if (Len(ID) != 18 || !(Mid(ID,2) == Caps(Mid(ID,2))) )
-	{
-		if ( Left(ID,2) ~= "0x" )
-			ID = Mid(ID, 2);
-		ID = Caps(ID);
-		while (Len(ID) < 16)
-			ID = "0"$ID;
-		ID = "0x"$ID;
-	}
-	return ID;
-}
 
 event PreLogin(string Options, string Address, const UniqueNetId UniqueId, bool bSupportsAuth, out string OutError, bool bSpectator)
 {
@@ -220,121 +192,6 @@ function AddAdmin( PlayerController Caller, PlayerReplicationInfo NewAdmin, bool
 		SaveConfig();
 		`LogRx("ADMIN"`s "Granted;"`s `PlayerLog(NewAdmin)`s "as"`s "administrator");
 		Caller.ClientMessage(NewAdmin.Name@" successfully added as an Administrator.");
-	}
-}
-
-// ForceKickPlayer copied from AccessControl -- adds ability to pass KickReason to client
-function bool ForceKickPlayer(PlayerController C, string KickReason)
-{
-	if (C != None && NetConnection(C.Player)!=None )
-	{
-		if (C.Pawn != None)
-		{
-			C.Pawn.Suicide();
-		}
-
-		`LogRx("PLAYER" `s "Kick;" `s `PlayerLog(C.PlayerReplicationInfo) `s "for" `s KickReason);
-		if (KickReason == "" || KickReason == DefaultKickReason || Rx_Controller(C) == None)
-			C.ClientWasKicked();
-		else
-			Rx_Controller(C).ClientWasKickedReason(KickReason);
-
-		if (C != None)
-		{
-			C.Destroy();
-		}
-		return true;
-	}
-	return false;
-}
-
-function bool KickPlayer(PlayerController C, string KickReason)
-{
-	if (KickReason != "" && KickReason != DefaultKickReason)
-		KickReason = "You were kicked from the server for: " $ KickReason;
-	return super.KickPlayer(C, KickReason);
-}
-
-// Jacked version of AccessControl::KickBan(...), fixes a problem with the way it gets the IP.
-function bool KickBanReason(PlayerController P, string reason )
-{
-	local string IP;
-
-	if ( NetConnection(P.Player) != None )
-	{
-		if (!WorldInfo.IsConsoleBuild())
-		{
-			IP = P.GetPlayerNetworkAddress();
-			if( CheckIPPolicy(IP) )
-			{
-				`Log("Adding IP Ban for: "$IP);
-				IPPolicies[IPPolicies.length] = "DENY," $ IP;
-				SaveConfig();
-			}
-		}
-
-		if ( P.PlayerReplicationInfo.UniqueId != P.PlayerReplicationInfo.default.UniqueId &&
-			!IsIDBanned(P.PlayerReplicationInfo.UniqueID) )
-		{
-			BannedIDs.AddItem(P.PlayerReplicationInfo.UniqueId);
-			SaveConfig();
-		}
-		return Super.KickPlayer(P, reason);
-	}
-}
-
-function bool KickBanPlayer(PlayerController C, string reason)
-{
-	return KickBanReason(C, "You were banned from the server for: " $ reason);
-}
-
-function KickBan( string Target )
-{
-	KickBanReason(PlayerController(GetControllerFromString(Target)), DefaultKickReason);
-}
-
-function Controller GetControllerFromString(string Target)
-{
-	local Controller C;
-	local Rx_PRI P;
-
-	// Make it behave like the Rx implemented commands.
-	P = Rx_Game(WorldInfo.Game).ParsePlayer(Target);
-	if (P != None)
-	{
-		foreach WorldInfo.AllControllers(class'Controller', C)
-		{
-			if (C.PlayerReplicationInfo == P)
-				return C;
-		}
-	}
-
-	// Just rely on original implementation if fail.
-	return super.GetControllerFromString(Target);
-}
-
-
-/** The IP Banning part of AccessControl::KickBan made standalone. DOES NOT VERIFY PARAMETER IS AN ACTUAL IP.
- *  @return true = Ban added. false = Already banned. */
-function bool BanIP(string IP)
-{
-	if( CheckIPPolicy(IP) )
-	{
-		`Log("Adding IP Ban for: "$IP);
-		IPPolicies[IPPolicies.length] = "DENY," $ IP;
-		SaveConfig();
-		return true;
-	}
-	return false;
-}
-
-function FlushTempBans()
-{
-	local int DayOfWeek, Hour, Min, i;
-	GetSystemTime(i,i,DayOfWeek,i,Hour,Min,i,i);
-
-	for (i=0; i<TempBans.Length; ++i)
-	{
 	}
 }
 
