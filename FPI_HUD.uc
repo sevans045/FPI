@@ -14,6 +14,17 @@ var FPI_HUD_AdminComponent FPI_HUDAdminComponent;
 var FPI_MutatorHandler MutatorHandler;
 var int DefaultTargettingRangex;
 
+function CreateHUDMovie()
+{
+    HudMovie = new class'FPI_GfxHud';
+    HudMovie.SetTimingMode(1);
+    HudMovie.Initialize();
+    HudMovie.SetTimingMode(1);
+    HudMovie.SetViewScaleMode(3);
+    HudMovie.SetAlignment(5);
+    HudMovie.RenxHud = self;
+}
+
 function CreateHudCompoenents()
 {
 	super.CreateHudCompoenents();
@@ -175,4 +186,5 @@ function Message( PlayerReplicationInfo PRI, coerce string Msg, name MsgType, op
 DefaultProperties
 {
 	DefaultTargettingRangex = 10000;
+	HudMovieClass = class'FPI_GFxHud'
 }
