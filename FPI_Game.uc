@@ -11,7 +11,6 @@
 class FPI_Game extends Rx_Game
 config(FPI);
 
-
 var config int ArcticML;
 var config int CanyonML;
 var config int CliffSideML;
