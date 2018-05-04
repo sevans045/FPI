@@ -5,6 +5,7 @@
  *
  * Written by Sarah Evans <sarahevans045@gmail.com>
  * Created for Fair Play Renegade-X Community
+ * This file contains source code from Renegade-X, with additional code.
  */
 
  class FPI_HUD extends Rx_HUD;
@@ -23,8 +24,6 @@ function CreateHudCompoenents()
 
 	FPI_HUDAdminComponent = new class'FPI_HUD_AdminComponent';
 }
-
-
 
 function UpdateHudCompoenents(float DeltaTime, Rx_HUD HUD)
 {
@@ -52,18 +51,18 @@ function Message( PlayerReplicationInfo PRI, coerce string Msg, name MsgType, op
 		PlayerOwner.PlayBeepSound();
 
 	// Create Raw and Formatted Chat Messages
-	
+
 	if (PRI != None)
-	{	
+	{
 		// We have a player, let's sort this out
 		cName = CleanHTMLMessage(PRI.PlayerName);
-	
+
 		if ( PRI.bAdmin )
 			cName = "<font color='#02FF00'><b>[STAFF]</b></font> " $ cName;
 	}
 	else
 		cName = "Host";
-		
+
 	if (MsgType == 'Say') {
 		if (PRI == None)
 			fMsg = "<font color='" $HostColor$"'>" $cName$"</font>: <font color='#FFFFFF'>"$CleanHTMLMessage(Msg)$"</font>";
@@ -75,7 +74,7 @@ function Message( PlayerReplicationInfo PRI, coerce string Msg, name MsgType, op
 					fMsg = "<font color='" $NodColor $"'>" $cName $"</font>: ";
 					MutatorHandler.MHChatMessage(Msg, PRI);
 				}
-	
+
 		if ( cName != "Host" ) {
 			fMsg $= CleanHTMLMessage(Msg);
 			PublicChatMessageLog $= "\n" $ fMsg;
@@ -99,23 +98,23 @@ function Message( PlayerReplicationInfo PRI, coerce string Msg, name MsgType, op
 	else if (MsgType == 'Radio')
 	{
 		if(Rx_PRI(PRI).bGetIsCommander())
-			fMsg = "<font color='" $CommandTextColor $"'>" $ "[Commander]" $ cName $": "$ Msg $"</font>"; 
+			fMsg = "<font color='" $CommandTextColor $"'>" $ "[Commander]" $ cName $": "$ Msg $"</font>";
 		else
-			fMsg = "<font color='" $RadioColor $"'>" $ cName $": "$ Msg $"</font>"; 
-		
-		fMsg = HighlightStructureNames(fMsg); 
+			fMsg = "<font color='" $RadioColor $"'>" $ cName $": "$ Msg $"</font>";
+
+		fMsg = HighlightStructureNames(fMsg);
 		//PublicChatMessageLog $= "\n" $ fMsg;
 		rMsg = cName $": "$ Msg;
 	}
-	else if (MsgType == 'Commander') 
+	else if (MsgType == 'Commander')
 	{
-		if(Left(Caps(msg), 2) == "/C") 
+		if(Left(Caps(msg), 2) == "/C")
 		{
 			msg = Right(msg, Len(msg)-2);
 			Rx_Controller(PlayerOwner).CTextMessage(msg,'Pink', 120.0,,true);
 		}
 		else
-		if(Left(Caps(msg), 2) == "/R") 
+		if(Left(Caps(msg), 2) == "/R")
 		{
 			msg = Right(msg, Len(msg)-2);
 			Rx_Controller(PlayerOwner).CTextMessage(msg,'Pink', 360.0,,true);

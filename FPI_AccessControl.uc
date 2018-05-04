@@ -5,6 +5,7 @@
  *
  * Written by Sarah Evans <sarahevans045@gmail.com>
  * Created for Fair Play Renegade-X Community
+ * This file contains source code from Renegade-X, with additional code.
  */
 
 class FPI_AccessControl extends Rx_AccessControl
