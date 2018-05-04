@@ -35,7 +35,6 @@ function InitMutator(string Options, out string ErrorMessage)
     if ( SystemMutator != None )
       SystemMutator.InitSystem();
     // FPIAdminHandler = spawn(class'FPI_AdminHandler');
-
 }
 
 simulated function Tick(float DeltaTime) // Tick for our Admin HUD
@@ -162,7 +161,6 @@ static function MessageSpecific(PlayerController receiver, string message, optio
 static function MessageTeam(int TeamID, string message)
 {
   local Controller c;
-
   foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
   {
     if ( c != None && c.GetTeamNum() == TeamID )
