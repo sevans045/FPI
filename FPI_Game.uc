@@ -8,9 +8,10 @@
  * This file contains source code from Renegade-X, with additional code.
  */
 
-class FPI_Game extends Rx_Game;
+class FPI_Game extends Rx_Game
+config(FPI);
 
-/*
+
 var config int ArcticML;
 var config int CanyonML;
 var config int CliffSideML;
@@ -111,6 +112,9 @@ function MGetMapName()
   } else if (WorldInfo.GetmapName() ~= "Walls")
   {
     SetML(WallsML);
+  } else if (WorldInfo.GetmapName() ~= "Walls (Flying)")
+  {
+    SetML(WallsML);
   }
    else if (WorldInfo.GetmapName() ~= "Whiteout")
   {
@@ -119,20 +123,21 @@ function MGetMapName()
   {
     SetML(XMountainML);
   } else {
-    return;
+    SetML(0);
   }
 }
 
 function SetML(int MLToSet)
 {
   if(MLToSet == 0){
-    NewMineLimit = 30;
-    } else{
+    NewMintLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit;
+    `log("[FPI] Could not find a custom mine limit for this map. Using the map's default.");
+    } else {
       NewMineLimit = MLToSet;
     }
 }
-*/
-/*
+
+
 event InitGame( string Options, out string ErrorMessage )
 {
     //local int MapIndex;
@@ -176,8 +181,16 @@ event InitGame( string Options, out string ErrorMessage )
 
     if (WorldInfo.NetMode == NM_DedicatedServer) //Static limits on-line
     {
-        MineLimit = NewMineLimit;
-        VehicleLimit= Rx_MapInfo(WorldInfo.GetMapInfo()).VehicleLimit;
+        if(bUseCustomMineLimits)
+        {
+            `log("[FPI] " $ WorldInfo.GetmapName() "'s custom mine limit is " $ NewMineLimit $ ". Default value is: " $ Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit $ "Applying custom mine limit.");
+            MineLimit = NewMineLimit;
+        } else {
+            `log("[FPI] Custom mine limit disabled or not found for this map. Using default: " Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit);
+            MintLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit;
+        }
+
+        VehicleLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).VehicleLimit;
     }
     else if(WorldInfo.NetMode == NM_Standalone)
     {
@@ -206,7 +219,7 @@ event InitGame( string Options, out string ErrorMessage )
         BaseMutator.InitMutator(Options, ErrorMessage);
     }
 }
-*/
+
 
 DefaultProperties
 {
