@@ -5,30 +5,11 @@
  *
  * Written by Sarah Evans <sarahevans045@gmail.com>
  * Created for Fair Play Renegade-X Community
+ * This file contains source code from Renegade-X, with additional code.
  */
 
 class FPI_Game extends Rx_Game;
 
-/*
-function TickCredits(byte TeamNum)
-{
-    local float CreditTickAmount;
-    local Rx_Building_Refinery Refinery;
-    
-    CreditTickAmount = Rx_MapInfo(WorldInfo.GetMapInfo()).BaseCreditsPerTick;
-    Refinery = TeamCredits[TeamNum].Refinery;
-    
-    if (Refinery != None && Refinery.IsDestroyed() == false)
-        CreditTickAmount = 2;
-        //CreditTickAmount += Refinery.CreditsPerTick;
-    
-    GiveTeamCredits(CreditTickAmount, TeamNum);
-    
-    //Sync Credit and CP ticks 
-    Rx_TeamInfo(Teams[0]).AddCommandPoints(default.CP_TickRate+(DestroyedBuildings_GDI*0.5)) ;
-    Rx_TeamInfo(Teams[1]).AddCommandPoints(default.CP_TickRate+(DestroyedBuildings_Nod*0.5)) ;
-}
-*/
 /*
 var config int ArcticML;
 var config int CanyonML;
@@ -153,10 +134,10 @@ function SetML(int MLToSet)
 */
 /*
 event InitGame( string Options, out string ErrorMessage )
-{   
+{
     //local int MapIndex;
     MGetMapName();
-    
+
     if(Rx_MapInfo(WorldInfo.GetMapInfo()).bIsDeathmatchMap)
     {
         if(TimeLimit != 10)
@@ -192,7 +173,7 @@ event InitGame( string Options, out string ErrorMessage )
     NODDifficulty = GetIntOption( Options, "NODDifficulty",4);
     GDIDifficulty += 3;
     NODDifficulty += 3;
-    
+
     if (WorldInfo.NetMode == NM_DedicatedServer) //Static limits on-line
     {
         MineLimit = NewMineLimit;
@@ -203,7 +184,7 @@ event InitGame( string Options, out string ErrorMessage )
         MineLimit = GetIntOption( Options, "MineLimit", MineLimit);
         VehicleLimit = GetIntOption( Options, "VehicleLimit", VehicleLimit);
         bDelayedStart = false;
-        //AddInitialBots(); 
+        //AddInitialBots();
     }
 
     InitialCredits = GetIntOption(Options, "StartingCredits", InitialCredits);
@@ -213,7 +194,7 @@ event InitGame( string Options, out string ErrorMessage )
     //Port = GetIntOption( Options, "PORT",7777);
     Port = `GamePort;
     //GamePassword = ParseOption( Options, "GamePassword");
-    
+
 
     // Initialize the maplist manager
     InitializeMapListManager();
@@ -227,43 +208,8 @@ event InitGame( string Options, out string ErrorMessage )
 }
 */
 
-/**
- * Notifies all clients to travel to the specified URL.
- *
- * @param   URL             a string containing the mapname (or IP address) to travel to, along with option key/value pairs
- * @param   NextMapGuid     the GUID of the server's version of the next map
- * @param   bSeamless       indicates whether the travel should use seamless travel or not.
- * @param   bAbsolute       indicates which type of travel the server will perform (i.e. TRAVEL_Relative or TRAVEL_Absolute)
- */
-/*function PlayerController ProcessClientTravel( out string URL, Guid NextMapGuid, bool bSeamless, bool bAbsolute )
-{
-    local PlayerController P, LP;
-
-    // We call PreClientTravel directly on any local PlayerPawns (ie listen server)
-    foreach WorldInfo.AllControllers(class'PlayerController', P)
-    {
-        if ( NetConnection(P.Player) != None )
-        {
-            // remote player
-            `log("Remote player activated");
-            //P.ClientTravel(URL, TRAVEL_Relative, bSeamless, NextMapGuid);
-            P.ClientTravel("5.39.74.177", TRAVEL_Relative, bSeamless, NextMapGuid);
-        }
-        else
-        {
-            `log("Local player activated");
-            // local player
-            LP = P;
-            //P.PreClientTravel(URL, bAbsolute ? TRAVEL_Absolute : TRAVEL_Relative, bSeamless);
-            P.PreClientTravel("5.39.74.177", bAbsolute ? TRAVEL_Absolute : TRAVEL_Relative, bSeamless);
-        }
-    }
-
-    return LP;
-}*/
-
 DefaultProperties
-{   
+{
     HudClass                   = class'FPI_HUD'
  //   VictoryMessageClass        = class'Rx_VictoryMessage'
  //   DeathMessageClass          = class'Rx_DeathMessage'
@@ -272,9 +218,9 @@ DefaultProperties
     PlayerReplicationInfoClass = class'FPI_PRI'
  //  BroadcastHandlerClass      = class'FPI_BroadcastHandler'
     AccessControlClass         = class'FPI_AccessControl'
-    
+
  //   GameReplicationInfoClass   = class'Rx_GRI'
  //   PurchaseSystemClass        = class'Rx_PurchaseSystem'
  //   VehicleManagerClass        = class'Rx_VehicleManager'
- //   CommanderControllerClass   = class'Rx_CommanderController'
+ //   CommanderControllerClass   = class'FPI_CommanderController'
 }
