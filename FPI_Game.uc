@@ -38,6 +38,8 @@ var config int WallsML;
 var config int WhiteoutML;
 var config int XMountainML;
 
+var config bool bUseCustomMineLimits;
+
 var int OldMineLimit;
 var int NewMineLimit;
 
@@ -130,7 +132,7 @@ function MGetMapName()
 function SetML(int MLToSet)
 {
   if(MLToSet == 0){
-    NewMintLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit;
+    NewMineLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit;
     `log("[FPI] Could not find a custom mine limit for this map. Using the map's default.");
     } else {
       NewMineLimit = MLToSet;
@@ -181,13 +183,13 @@ event InitGame( string Options, out string ErrorMessage )
 
     if (WorldInfo.NetMode == NM_DedicatedServer) //Static limits on-line
     {
-        if(bUseCustomMineLimits)
+        if(bUseCustomMineLimits == true)
         {
-            `log("[FPI] " $ WorldInfo.GetmapName() "'s custom mine limit is " $ NewMineLimit $ ". Default value is: " $ Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit $ "Applying custom mine limit.");
+            `log("[FPI] " $ WorldInfo.GetmapName() $ "'s custom mine limit is " $ NewMineLimit $ ". Default value is: " $ Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit $ "Applying custom mine limit.");
             MineLimit = NewMineLimit;
         } else {
-            `log("[FPI] Custom mine limit disabled or not found for this map. Using default: " Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit);
-            MintLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit;
+            `log("[FPI] Custom mine limit disabled or not found for this map. Using default: " $ Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit);
+            MineLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).MineLimit;
         }
 
         VehicleLimit = Rx_MapInfo(WorldInfo.GetMapInfo()).VehicleLimit;
@@ -233,7 +235,7 @@ DefaultProperties
     AccessControlClass         = class'FPI_AccessControl'
 
  //   GameReplicationInfoClass   = class'Rx_GRI'
- //   PurchaseSystemClass        = class'Rx_PurchaseSystem'
+ //   PurchaseSystemClass        = class'FPI_PurchaseSystem'
  //   VehicleManagerClass        = class'Rx_VehicleManager'
  //   CommanderControllerClass   = class'FPI_CommanderController'
 }
