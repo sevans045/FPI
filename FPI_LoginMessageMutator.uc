@@ -24,15 +24,15 @@ function MHOnPlayerConnect(PlayerController NewPlayer, string SteamID)
 function CheckLoginSteamID(PlayerController NewPlayer, string SteamID)
 {
   if (SteamID ~= "0x0110000108C01817")            // The person's steam ID.
-    { 
-      SendLoginMessage(NewPlayer, "Some message here.");     // Obviously trigger the message login.
+    {
+      SendLoginMessage(NewPlayer, "Sarah is here! Everyone run!!!");     // Obviously trigger the message login.
     } else if (SteamID ~= "some_other_ID"){
     }
   }
 
 function SendLoginMessage(PlayerController P, string message)
 {
-  local Controller c;                            
+  local Controller c;
     foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c) // Loop through every player's controller.
   	{
   		if ( c != None )
