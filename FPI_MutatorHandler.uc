@@ -86,7 +86,7 @@ function OnMatchStart()
        MessageAdminsRed("Not Initing Server Travel Mutator!");
     }
 
-     // SetTimer(90, true, 'CommanderReminder');
+     SetTimer(90, true, 'CommanderReminder');
 }
 
 
@@ -99,6 +99,7 @@ function OnMatchEnd()
       `log("################################");
      // ServerTravelMutator.FPIServerTravel();                // Enable this if we want to split servers. However, the function currently does not support having it enabled and not split people.
     }
+    ClearTimer('CommanderReminder');
 }
 
 function OnPlayerConnect(PlayerController NewPlayer,  string SteamID)
@@ -189,7 +190,7 @@ function CommanderReminder()
           NodHasCommander = true;
           `log("Nod's commander is " $ PC.PlayerReplicationInfo.GetHumanReadableName());
       }
-    } 
+    }
     }
       if(GDIHasCommander == false)
     {
@@ -272,7 +273,7 @@ local SoundCue TauntToPlay;
 
 if(msg ~= "laser")
 {
-  TauntToPlay = SoundCue'RX_Artic_033.Sounds.firinmalazah'; 
+  TauntToPlay = SoundCue'RX_Artic_033.Sounds.firinmalazah';
 }
     foreach WorldInfo.AllControllers(class'PlayerController', PC)
   {
