@@ -214,7 +214,7 @@ DefaultProperties
  //   VictoryMessageClass        = class'Rx_VictoryMessage'
  //   DeathMessageClass          = class'Rx_DeathMessage'
  //   bUndrivenVehicleDamage     = true
-  //  PlayerControllerClass      = class'FPI_Controller'
+    PlayerControllerClass      = class'FPI_Controller'
     PlayerReplicationInfoClass = class'FPI_PRI'
  //  BroadcastHandlerClass      = class'FPI_BroadcastHandler'
     AccessControlClass         = class'FPI_AccessControl'
