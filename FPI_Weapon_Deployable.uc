@@ -10,6 +10,7 @@ function OvermineBroadcast()
 		if (Instigator.GetTeamNum() == PC.GetTeamNum())
 			PC.ClientMessage(Message, 'EVA');
 		Rx_Controller(Instigator.Controller).CTextMessage("[FPI] You're overmining!",'Red',300.0,1.5);
+		Rx_Controller(Instigator.Controller).CTextMessage("[FPI] Do you know what you're doing?",'Red',300.0,1.5);
 
 	`LogRx("GAME" `s "OverMine;" `s `PlayerLog(Instigator.Controller.PlayerReplicationInfo) `s "near" `s Rx_Controller(Instigator.Controller).GetSpottargetLocationInfo(self));
 }
