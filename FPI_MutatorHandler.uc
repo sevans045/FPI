@@ -48,7 +48,7 @@ simulated function Tick(float DeltaTime) // Tick for our Admin HUD
 
 function OnMatchStart()
 {
-  MessageAll("             Welcome to FPI!\nPlease review the rules and have fun.\nDon't forget to vote for a commander!");
+  MessageAll("               Welcome to FPI!\nPlease review the rules and have fun.\nDon't forget to vote for a commander!");
 
   if(bEnableCreditMutator == true)
   CreditMutator = spawn(class'FPI_CreditMutator');
