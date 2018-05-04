@@ -38,26 +38,6 @@ local Rx_Building thisBuilding;
   }
 }
 
-/* // Deprecated, saved for future reference.
-function CheckRefs()
-{
-  local Rx_Building building;
-
-  ForEach Rx_Game(`WorldInfoObject.Game).AllActors(class'Rx_Building',building)
-  {
-    if(Rx_Building_GDI_MoneyFactory(building).IsDestroyed())
-    {
-      setTimer(TickTime, true, 'CreditTickGDI');
-      `log("GDI refinery has died. Starting credit tick for GDI.");
-    } else if(Rx_Building_Nod_MoneyFactory(building).IsDestroyed())
-    {
-      setTimer(TickTime, true, 'CreditTickNod');
-      `log("Nod refinery has died. Starting credit tick for Nod.");
-    }
-  }
-}
-*/
-
 function CreditTickGDI()
 {
   local PlayerReplicationInfo PRI;
