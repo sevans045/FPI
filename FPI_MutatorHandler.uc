@@ -15,12 +15,10 @@ var FPI_LoginMessageMutator LoginMessageMutator;
 var FPI_ServerTravelMutator ServerTravelMutator;
 var FPI_Sys_Mutator SystemMutator;
 //var FPI_AdminHandler FPIAdminHandler; // Don't need this, it's for commands.
-//var FPI_MineLimitMutator MineLimitMutator;
 
 var config bool bEnableCreditMutator;
 var config bool bEnableLoginMessageMutator;
 var config bool bEnableServerTravelMutator;
-//var config bool bEnableMineLimitMutator;
 
 function PostBeginPlay()
 {
@@ -55,10 +53,10 @@ function OnMatchStart()
     {
        CreditMutator.InitThisMutator();
        `log("[Mutator Handler] Initing Credit Mutator");
-       MessageAdminsGreen("Initing Credit Mutator!");
+       MessageAdmins("Initing Credit Mutator!");
     } else {
       `log("[Mutator Handler] Credit mutator was disabled via config. Not loading.");
-      MessageAdminsRed("Not Initing Credit Mutator!");
+      MessageAdmins("Not Initing Credit Mutator!", 'Red');
     }
 
     if(bEnableLoginMessageMutator == true)
@@ -67,10 +65,10 @@ function OnMatchStart()
     {
         LoginMessageMutator.InitThisMutator();
        `log("[Mutator Handler] Initing Login Message Mutator");
-        MessageAdminsGreen("Initing Login Message Mutator!");
+        MessageAdmins("Initing Login Message Mutator!");
     } else {
        `log("[Mutator Handler] Login message mutator was disabled via config. Not loading.");
-       MessageAdminsRed("Not Initing Login Message Mutator!");
+       MessageAdmins("Not Initing Login Message Mutator!", 'Red');
     }
 
     if(bEnableServerTravelMutator == true)
@@ -79,10 +77,10 @@ function OnMatchStart()
     {
         ServerTravelMutator.InitThisMutator();
        `log("[Mutator Handler] Initing Server Travel Mutator");
-        MessageAdminsGreen("Initing Server Travel Mutator!");
+        MessageAdmins("Initing Server Travel Mutator!");
     } else {
        `log("[Mutator Handler] Server travel mutator was disabled via config. Not loading.");
-       MessageAdminsRed("Not Initing Server Travel Mutator!");
+       MessageAdmins("Not Initing Server Travel Mutator!", 'Red');
     }
 
      SetTimer(90, true, 'CommanderReminder');
@@ -125,29 +123,18 @@ static function MessageAll(string message)
   {
     if ( c != None )
       if ( Rx_Controller(c) != none && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None)
-        Rx_Controller(c).CTextMessage(message,'Green',120);
+        Rx_Controller(c).CTextMessage("[FPI] " $ message,'Green',120);
   }
 }
 
-static function MessageAdminsGreen(string message)
+static function MessageAdmins(string message, optional name MsgColor = 'Green')
 {
   local Controller c;
   foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
   {
     if ( c != None )
       if ( Rx_Controller(c) != none && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo).bAdmin )
-        Rx_Controller(c).CTextMessage("[FPI Admin] " $ message,'LightGreen',120);
-  }
-}
-
-static function MessageAdminsRed(string message)
-{
-  local Controller c;
-  foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
-  {
-    if ( c != None )
-      if ( Rx_Controller(c) != none && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo).bAdmin )
-        Rx_Controller(c).CTextMessage("[FPI Admin] " $ message,'Red',120);
+        Rx_Controller(c).CTextMessage("[FPI Admin] " $ message,MsgColor,120);
   }
 }
 
@@ -155,7 +142,7 @@ static function MessageSpecific(PlayerController receiver, string message, optio
 {
   if (receiver != None)
     if (Rx_Controller(receiver) != none && Rx_PRI(Rx_Controller(receiver).PlayerReplicationInfo) != None)
-      Rx_Controller(receiver).CTextMessage(message,MsgColor,120);
+      Rx_Controller(receiver).CTextMessage("[FPI] " $ message,MsgColor,120);
 }
 
 static function MessageTeam(int TeamID, string message)
@@ -201,6 +188,15 @@ function CommanderReminder()
 }
   }
 
+static function string GetCustomWeaponNames(UTWeapon ThisWeapon)
+{
+  if (ThisWeapon.IsA('FPI_Weapon_ProxyC4'))
+    return "Proxy C4";
+  if (ThisWeapon.IsA('FPI_Weapon_RepairGunAdvanced'))
+    return "Advanced Repair Gun"
+  else
+    return ThisWeapon.ItemName;
+}
 
 /***************** Commands *****************/
 
