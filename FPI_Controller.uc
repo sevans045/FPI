@@ -18,16 +18,13 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 	local int PlayerCount;
 	PlayerCount = `WorldInfoObject.Game.NumPlayers-1;
 
-	if(PlayerCount < MinimumPlayersForSuperweapon)	// Is there less people than required by the config?
-		if(CharID == 0)    // Is the item being purchased a beacon? Beacon ID is 0
+	if(CharID == 0)	  // Is the item being purchased a beacon? Beacon ID is 0
+		if(PlayerCount < MinimumPlayersForSuperweapon)	// Is there less people than required by the config?
 		{
 			CTextMessage("[FPI] Not enough players for that.\nThere needs to be "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
 			`log("Someone just tried to purchase a beacon. Current players: " $ PlayerCount $ "/" $ MinimumPlayersForSuperweapon);
 			return;
-		} else if (PlayerCount > MinimumPlayersForSuperweapon) {
-			if (ValidPTUse(PT))
-				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
-		} else {
+		} else if (CharID == 1 || CharID == 2) {
 			if (ValidPTUse(PT))
 				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
 		}
