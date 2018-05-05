@@ -291,7 +291,7 @@ DefaultProperties
 	
 	PlayerViewOffset=(X=10.0,Y=0.0,Z=-2.5)
 	FireOffset=(X=25,Y=0,Z=-5)
-	SecondsNeedLoad=1.0
+	SecondsNeedLoad=0.13
 	
 	bRemoveWhenDepleted = false
 	bBlockDeployCloseToOwnBase=false
@@ -313,7 +313,7 @@ DefaultProperties
 
 	ShotCost(0)=1
 	ShotCost(1)=0
-	FireInterval(0)=+1.0
+	FireInterval(0)=+0.5
 	FireInterval(1)=+0.0
 	ReloadTime(0)=1.0
 	ReloadTime(1)=0.0
