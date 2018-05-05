@@ -24,7 +24,11 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 			CTextMessage("[FPI] Not enough players for that.\nThere needs to be "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
 			`log("Someone just tried to purchase a beacon. Current players: " $ PlayerCount $ "/" $ MinimumPlayersForSuperweapon);
 			return;
-		} else
-		if (ValidPTUse(PT))
-			Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
+		} else if (PlayerCount > MinimumPlayersForSuperweapon) {
+			if (ValidPTUse(PT))
+				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
+		} else {
+			if (ValidPTUse(PT))
+				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
+		}
 }
