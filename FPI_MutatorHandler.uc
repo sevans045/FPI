@@ -193,7 +193,7 @@ static function string GetCustomWeaponNames(UTWeapon ThisWeapon)
   if (ThisWeapon.IsA('FPI_Weapon_ProxyC4'))
     return "Proxy C4";
   if (ThisWeapon.IsA('FPI_Weapon_RepairGunAdvanced'))
-    return "Advanced Repair Gun"
+    return "Advanced Repair Gun";
   else
     return ThisWeapon.ItemName;
 }
