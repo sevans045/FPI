@@ -31,7 +31,7 @@ function InitMutator(string Options, out string ErrorMessage)
 {
     SystemMutator = spawn(class'FPI_Sys_Mutator');
     if ( SystemMutator != None )
-      SystemMutator.InitSystem();
+      SystemMutator.InitThisMutator();
     // FPIAdminHandler = spawn(class'FPI_AdminHandler');
 }
 

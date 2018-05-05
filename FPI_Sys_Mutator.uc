@@ -23,7 +23,7 @@ function OnTick(float DeltaTime)
 		FPIController.OnTick(DeltaTime);
 }
 
-function InitSystem()
+function InitThisMutator()
 {
 	ourServerFPS = 0;
 	
