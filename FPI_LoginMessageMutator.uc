@@ -26,6 +26,7 @@ function CheckLoginSteamID(PlayerController NewPlayer, string SteamID)
   if (SteamID ~= "0x0110000108C01817")            // The person's steam ID.
     {
       SendLoginMessage(NewPlayer, "Sarah is here! Everyone run!!!");     // Obviously trigger the message login.
+      PlayLoginSound("Sarah");
     } else if (SteamID ~= "some_other_ID"){
     }
   }
@@ -37,8 +38,23 @@ function SendLoginMessage(PlayerController P, string message)
   	{
   		if ( c != None )
   			if (Rx_Controller(c) != none)
-  				Rx_Controller(c).CTextMessage("[" $ P.GetHumanReadableName() $ "]\n" @ message, 'Blue'); // Send our message.
+  				Rx_Controller(c).CTextMessage(message, 'Blue'); // Send our message.
   	}
+}
+
+function PlayLoginSound(string HumanName)
+{
+  local PlayerController PC;
+  local SoundCue LoginSound;
+
+  if (HumanName ~= "Sarah")
+      LoginSound = SoundCue'FPI_FX.Sounds.S_JustAsFun';
+  `log("Playing login sound for " $ HumanName);
+
+  foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'PlayerController', PC) // Loop through every player's controller.
+  {
+      PC.ClientPlaySound(LoginSound);
+  }
 }
 
 DefaultProperties
