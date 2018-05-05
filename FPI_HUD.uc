@@ -53,7 +53,6 @@ function Message( PlayerReplicationInfo PRI, coerce string Msg, name MsgType, op
 {
 	local string cName, fMsg, rMsg;
 	local bool bEVA;
-	`log("Message event from HUD fired.");
 
 	if (Len(Msg) == 0)
 		return;
