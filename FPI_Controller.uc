@@ -22,6 +22,7 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 		if(PlayerCount < MinimumPlayersForSuperweapon)	// Is there less people than required by the config?
 		{
 			CTextMessage("[FPI] Not enough players for that.\nThere needs to be "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
+			ClientPlaySound(SoundCue'FPI_FX.Sounds.S_AccessDenied');
 			`log("Someone just tried to purchase a beacon. Current players: " $ PlayerCount $ "/" $ MinimumPlayersForSuperweapon);
 			return;
 		} else if (CharID == 1 || CharID == 2) {
