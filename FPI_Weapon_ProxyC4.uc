@@ -1,3 +1,13 @@
+/*
+ * This file is in the public domain, furnished "as is", without technical
+ * support, and with no warranty, express or implied, as to its usefulness for
+ * any purpose.
+ *
+ * Written by Sarah Evans <sarahevans045@gmail.com>
+ * Created for Fair Play Renegade-X Community
+ * This file contains source code from Renegade-X, with additional code.
+ */
+ 
 class FPI_Weapon_ProxyC4 extends FPI_Weapon_Beacon;  //Rx_Weapon_Deployable;
 
 /**
@@ -11,8 +21,8 @@ simulated function WeaponEmpty()
 	if (Rx_Controller(Instigator.Controller).CurrentExplosiveWeapon == self.Class) {
 			Rx_Controller(Instigator.Controller).CurrentExplosiveWeapon = none;
 		}
-	} 
-	
+	}
+
 	super.WeaponEmpty();
 }*/
 
@@ -31,7 +41,7 @@ simulated function DrawCrosshair( Hud HUD )
 	local color TempColor;
 	local float MineTextL, MineTextH, MineEmphasisScale;
 	local LinearColor LC; //nBab
-	
+
 	//set initial color based on settings (nBab)
 	LC.A = 1.f;
 	switch (Rx_HUD(Rx_Controller(Instigator.Controller).myHUD).SystemSettingsHandler.GetCrosshairColor())
@@ -65,39 +75,39 @@ simulated function DrawCrosshair( Hud HUD )
 			LC.R = 0.f;
 			LC.G = 2.f;
 			LC.B = 2.f;
-			break;	
-	}	
-	
+			break;
+	}
+
 	H = UTHUDBase(HUD);
 	if ( H == None )
 		return;
-	
-	
+
+
 	MineNum=Rx_HUD(H).HudMovie.CurrentNumMines;
 	MaxMineNum=Rx_HUD(H).HudMovie.CurrentMaxMines;
-	
-	CrosshairWidth = default.CrosshairWidth + RecoilSpread*RecoilSpreadCrosshairScaling;	
+
+	CrosshairWidth = default.CrosshairWidth + RecoilSpread*RecoilSpreadCrosshairScaling;
 	CrosshairHeight = default.CrosshairHeight + RecoilSpread*RecoilSpreadCrosshairScaling;
-		
+
 	CrosshairLinesX = H.Canvas.ClipX * 0.5 - (CrosshairWidth * 0.5);
-	CrosshairLinesY = H.Canvas.ClipY * 0.5 - (CrosshairHeight * 0.5);	
-	
+	CrosshairLinesY = H.Canvas.ClipY * 0.5 - (CrosshairHeight * 0.5);
+
 	MyPawnOwner = Pawn(Owner);
 
 	//determines what we are looking at and what color we should use based on that.
 	if (MyPawnOwner != None)
 	{
 		TargetActor = Rx_Hud(HUD).GetActorWeaponIsAimingAt();
-		if (Pawn(TargetActor) == None && Rx_Weapon_DeployedActor(TargetActor) == None && 
+		if (Pawn(TargetActor) == None && Rx_Weapon_DeployedActor(TargetActor) == None &&
 			Rx_Building(TargetActor) == None && Rx_BuildingAttachment(TargetActor) == None)
 		{
 			TargetActor = (TargetActor == None) ? None : Pawn(TargetActor.Base);
 		}
-		
+
 		if(TargetActor != None)
 		{
 			targetTeam = TargetActor.GetTeamNum();
-			
+
 			if (targetTeam == 0 || targetTeam == 1) //has to be gdi or nod player
 			{
 				if (targetTeam != MyPawnOwner.GetTeamNum())
@@ -122,7 +132,7 @@ simulated function DrawCrosshair( Hud HUD )
 			}
 		}
 	}
-	
+
 	if (!HasAnyAmmo()) //no ammo, go yellow
 	{
 		//nBab
@@ -144,7 +154,7 @@ simulated function DrawCrosshair( Hud HUD )
 	//nBab
 	CrosshairMIC2.SetVectorParameterValue('Reticle_Colour', LC);
 	CrosshairDotMIC2.SetVectorParameterValue('Reticle_Colour', LC);
-	
+
 	H.Canvas.SetPos( CrosshairLinesX, CrosshairLinesY );
 	if(bDisplayCrosshair) {
 		H.Canvas.DrawMaterialTile(CrosshairMIC2, CrosshairWidth, CrosshairHeight);
@@ -156,44 +166,44 @@ simulated function DrawCrosshair( Hud HUD )
 	H.Canvas.SetPos( X, Y );
 	if(bDisplayCrosshair) {
 		H.Canvas.DrawMaterialTile(CrosshairDotMIC2, default.CrosshairWidth, default.CrosshairHeight);
-		
+
 		//Draw Mine Limit
 		H.Canvas.Font=Font'RenXTargetSystem.T_TargetSystemPercentage';
-		H.Canvas.StrLen("Mines: " $ MineNum $ "/" $ MaxMineNum, MineTextL,MineTextH)	; //I wasn't going to center it.. but baah, I'm going to center it. 
-		
+		H.Canvas.StrLen("Mines: " $ MineNum $ "/" $ MaxMineNum, MineTextL,MineTextH)	; //I wasn't going to center it.. but baah, I'm going to center it.
+
 		TempColor=H.Canvas.DrawColor;
-		if(float(MineNum)/float(MaxMineNum) < 0.5) 
+		if(float(MineNum)/float(MaxMineNum) < 0.5)
 		{
 			H.Canvas.SetDrawColor(0,255,0,255); //Green
 			MineEmphasisScale=1;
 		}
-		if(float(MineNum)/float(MaxMineNum) >= 0.5) 
+		if(float(MineNum)/float(MaxMineNum) >= 0.5)
 		{
 			H.Canvas.SetDrawColor(255,255,0,255); //Yeller
 			MineEmphasisScale=1.2;
 		}
-		
+
 		if(float(MineNum/MaxMineNum) >= 0.90)
 		{
 			H.Canvas.SetDrawColor(255,0,0,255); //Red
 			MineEmphasisScale=1.4;
 		}
-		
+
 		H.Canvas.SetPos(
 		X+(default.CrosshairWidth/2)-(MineTextL*MineEmphasisScale)/2,
 		Y+default.CrosshairHeight/5);
-		
-		
-		
+
+
+
 		H.Canvas.DrawText("Mines: " $ MineNum $ "/" $ MaxMineNum ,true,MineEmphasisScale,MineEmphasisScale);
 		H.Canvas.DrawColor=TempColor;
-		
+
 	}
 	DrawHitIndicator(H,x,y);
 }
 
 
-simulated function bool IsValidPosition() 
+simulated function bool IsValidPosition()
 {
 	return true;
 }
@@ -201,15 +211,15 @@ simulated function bool IsValidPosition()
 function bool Deploy()
 {
 	local Rx_Controller IPC;
-	
+
 	IPC=Rx_Controller(Instigator.Controller);
-	
+
 	if(Rx_PRI(IPC.PlayerReplicationInfo).bCanMine == false) /*Nobody likes you; you can't use these things that have been badly designed for 12+ years now.*/
-	{	
+	{
 		IPC.CTextMessage("You are currently banned from Mining");
 		return false;
 	}
-	
+
 	//if(super(Rx_Weapon_Deployable).Deploy()) {
 		if(super.Deploy() ){
 		destroyOldMinesIfMinelimitReached();
@@ -249,7 +259,7 @@ simulated function ActiveRenderOverlays( HUD H )
    C.DrawBox(PanX, PanY);
    // draw the text
    C.SetPos(PosX+3, PosY+3);
-   
+
    //C.DrawText("Planting.....");
    // draw the loadpanel anim
    C.DrawColor.A = 128;
@@ -267,7 +277,7 @@ simulated function PerformRefill()
 DefaultProperties
 {
 	DeployedActorClass=class'Rx_Weapon_DeployedProxyC4'
-	
+
 	PanelWidth  = 0.15f
     PanelHeight = 0.033f
 	// Weapon SkeletalMesh
@@ -282,20 +292,20 @@ DefaultProperties
 		Scale=2.0
 		FOV=50.0
 	End Object
-	
+
 	ArmsAnimSet = AnimSet'rx_wp_proxyc4.Anims.AS_WP_ProxyC4_Arms'
 
 	AttachmentClass = class'Rx_Attachment_ProxyC4'
-	
+
 	BackWeaponAttachmentClass = class'Rx_BackWeaponAttachment_ProxyC4'
-	
+
 	PlayerViewOffset=(X=10.0,Y=0.0,Z=-2.5)
 	FireOffset=(X=25,Y=0,Z=-5)
 	SecondsNeedLoad=0.13
-	
+
 	bRemoveWhenDepleted = false
 	bBlockDeployCloseToOwnBase=false
-	
+
 	//-------------- Recoil
 	RecoilDelay = 0.07
 	RecoilSpreadDecreaseDelay = 0.1
@@ -317,7 +327,7 @@ DefaultProperties
 	FireInterval(1)=+0.0
 	ReloadTime(0)=1.0
 	ReloadTime(1)=0.0
-	
+
 	EquipTime=1.0
 //	PutDownTime=0.5
 
@@ -326,16 +336,16 @@ DefaultProperties
 
     Spread(0)=0.0
 	Spread(1)=0.0
-	
+
 	bDisplayCrosshair=false
-	
+
 	ClipSize = 5 //6 //1
 	InitalNumClips = 1 //6
 	MaxClips = 1 //6
-	
+
 	//AmmoCount=6
 	//MaxAmmoCount=6
-	
+
 	ThirdPersonWeaponPutDownAnim="H_M_C4_PutDown"
 	ThirdPersonWeaponEquipAnim="H_M_C4_Equip"
 
@@ -355,7 +365,7 @@ DefaultProperties
 	ReloadSound(1)=SoundCue'RX_WP_TimedC4.Sounds.SC_TimedC4_Equip'
 
 	PickupSound=SoundCue'RX_WP_Shotgun.Sounds.SC_Shotgun_Equip'
- 
+
 	MuzzleFlashSocket=MuzzleFlashSocket
 	FireSocket=MuzzleFlashSocket
 
@@ -366,7 +376,7 @@ DefaultProperties
 	InventoryMovieGroup=25
 
 	WeaponIconTexture=Texture2D'rx_wp_proxyc4.UI.T_WeaponIcon_ProximityC4'
-	
+
 	// AI Hints:
 	//MaxDesireability=0.7
 	AIRating=+0.3

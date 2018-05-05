@@ -1,3 +1,13 @@
+/*
+ * This file is in the public domain, furnished "as is", without technical
+ * support, and with no warranty, express or implied, as to its usefulness for
+ * any purpose.
+ *
+ * Written by Sarah Evans <sarahevans045@gmail.com>
+ * Created for Fair Play Renegade-X Community
+ * This file contains source code from Renegade-X, with additional code.
+ */
+ 
 class FPI_Weapon_Beacon extends FPI_Weapon_Deployable;
 
 `include(RenX_Game\RenXStats.uci);
@@ -116,7 +126,7 @@ simulated state Charging
 
    simulated function ChargeProgress()
    {
-	
+
       if (isMoving() || Instigator.Physics == PHYS_Falling || Instigator.Physics == PHYS_Swimming)
       {
          ClearPendingFire(0);
@@ -168,7 +178,7 @@ simulated state Charging
 
    simulated function BeginState(name PreviousStateName)
    {
-   	  super.BeginState(PreviousStateName);	
+   	  super.BeginState(PreviousStateName);
    	  if(Rx_Pawn_SBH(Instigator) != None)
    	  	 Rx_Pawn_SBH(Instigator).ChangeState('WaitForSt');
    }
@@ -181,12 +191,12 @@ simulated state Charging
 	 if (bCharging == true)
 	 {
 		bCharging = false;
-	  
-     
+
+
       CurrentProgress = 0;
       bShowLoadPanel = false;
 
-      if(WorldInfo.NetMode != NM_DedicatedServer) 
+      if(WorldInfo.NetMode != NM_DedicatedServer)
       {
 		 CancelDeployAnimation();
 		 if (ChargeCueComp != none)
@@ -198,7 +208,7 @@ simulated state Charging
    }
 }
 
-simulated function CustomFire()   
+simulated function CustomFire()
 {
 //
 }
@@ -207,19 +217,19 @@ function bool Deploy()
    {
       local Rotator FlatAim;
       local vector spawnLoc;
-	  
+
 	  if(!isValidPosition())
 	  {
 	  	return false;
-	  }	  
+	  }
 
       FlatAim.Yaw = 0;
       FlatAim.Pitch = 0;
       FlatAim.Roll = 0;
-	  
+
 	  spawnLoc = Owner.Location;
 
-      DeployedActor = Spawn(DeployedActorClass, Pawn(Owner).Controller,, spawnLoc, FlatAim); 
+      DeployedActor = Spawn(DeployedActorClass, Pawn(Owner).Controller,, spawnLoc, FlatAim);
       DeployedActor.bCollideComplex=false;
 
 	  ClientFire();
@@ -229,7 +239,7 @@ function bool Deploy()
 	  if (AmmoCount <= 0 && bRemoveWhenDepleted)
 		Rx_InventoryManager(Pawn(Owner).InvManager).RemoveWeaponOfClass(self.Class);
 
-      if (DeployedActor == none) 
+      if (DeployedActor == none)
       {
          loginternal("Error: Beacon could not be placed <spawn problem>");
          return false;
@@ -245,35 +255,35 @@ reliable server function ServerDeploy()
 	Deploy();
 }
 
-simulated function bool IsValidPosition() 
+simulated function bool IsValidPosition()
 {
 	local vector HitLocation, HitNormal, off;
 	local Actor HitActor;
 	local float ZDistToBuildingCenter;
 	local float notCrouchedOffset;
-	
+
 	if(bBlockDeployCloseToOwnBase && GetNearestSpottargetLocationIsOwnTeamBuilding())
 	{
 	  Rx_Controller(Pawn(Owner).Controller).ClientMessage("Planting Beacon failed: This location is too close to your base!");
-	  return false;	
+	  return false;
 	}
-	 
+
 	off = Pawn(Owner).location;
-	off.z -= 60;  
-	
-	if(!Pawn(Owner).bIsCrouched) 
+	off.z -= 60;
+
+	if(!Pawn(Owner).bIsCrouched)
 	{
-		notCrouchedOffset = 15; 
-		off.z -= notCrouchedOffset; 		
-	}		
-	
+		notCrouchedOffset = 15;
+		off.z -= notCrouchedOffset;
+	}
+
 	HitActor = Trace(HitLocation, HitNormal, off, Pawn(Owner).location, true);
-	
+
 	if(HitActor == None || !HitActor.bWorldGeometry)
 	{
 		Rx_Controller(Pawn(Owner).Controller).ClientMessage("Planting Beacon failed: This location is invalid!");
 		return false;
-	} 
+	}
 
 	if(Rx_Building(HitActor) != none) ZDistToBuildingCenter = abs(Rx_Building(HitActor).location.z - (Pawn(Owner).location.z - notCrouchedOffset));
 
@@ -284,35 +294,35 @@ simulated function bool IsValidPosition()
 	      ||  (Rx_Building_AirTower(HitActor) != None && !HitActor.IsA('Rx_Building_AirTower_Ramps')
 					&& !(ZDistToBuildingCenter > 90 && (Rx_Building(HitActor).location.z - Pawn(Owner).location.z) > 0))
 	      ||  (Rx_Building_Barracks(HitActor) != None && !HitActor.IsA('Rx_Building_Barracks_Ramps')
-					&& !(ZDistToBuildingCenter > 90 && (Rx_Building(HitActor).location.z - Pawn(Owner).location.z) > 0))	
+					&& !(ZDistToBuildingCenter > 90 && (Rx_Building(HitActor).location.z - Pawn(Owner).location.z) > 0))
 	      ||  (Rx_Building_PowerPlant(HitActor) != None && !HitActor.IsA('Rx_Building_PowerPlant_GDI_Ramps') && !HitActor.IsA('Rx_Building_PowerPlant_Nod_Ramps')
-					&& !(ZDistToBuildingCenter > 90 && (Rx_Building(HitActor).location.z - Pawn(Owner).location.z) > 0)))										
+					&& !(ZDistToBuildingCenter > 90 && (Rx_Building(HitActor).location.z - Pawn(Owner).location.z) > 0)))
 	{
 		Rx_Controller(Pawn(Owner).Controller).ClientMessage("Planting Beacon failed: This location is invalid!");
 		return false; // to prevent beacons to be placed on chimneys, the Hand of the HON etc
 	}
-	
-	return true; 
+
+	return true;
 }
 
-simulated function bool GetNearestSpottargetLocationIsOwnTeamBuilding() 
+simulated function bool GetNearestSpottargetLocationIsOwnTeamBuilding()
 {
 	local RxIfc_SpotMarker SpotMarker;
 	local Actor TempActor;
 	local float NearestSpotDist;
 	local RxIfc_SpotMarker NearestSpotMarker;
-	local float DistToSpot;	
-	
+	local float DistToSpot;
+
 	foreach AllActors(class'Actor',TempActor,class'RxIfc_SpotMarker') {
 		SpotMarker = RxIfc_SpotMarker(TempActor);
 		DistToSpot = VSize(TempActor.location - owner.location);
 		if(NearestSpotDist == 0.0 || DistToSpot < NearestSpotDist) {
-			NearestSpotDist = DistToSpot;	
+			NearestSpotDist = DistToSpot;
 			NearestSpotMarker = SpotMarker;
 		}
 	}
-	
-	return Rx_Building(NearestSpotMarker) != None && Rx_Building(NearestSpotMarker).GetTeamNum() == Pawn(Owner).GetTeamNum();		
+
+	return Rx_Building(NearestSpotMarker) != None && Rx_Building(NearestSpotMarker).GetTeamNum() == Pawn(Owner).GetTeamNum();
 }
 
 simulated function PerformRefill()
@@ -344,10 +354,10 @@ simulated function ActiveRenderOverlays( HUD H )
 			HudMovie.HideLoadingBar();
 		}
 		return;
-   } 
+   }
 
    if (HudMovie != none) {
-	
+
 	   if (CurrentProgress < 0.5){
 			HudMovie.ShowLoadingBar(CurrentProgress, "Loading Coordinates ...");
 	   } else {
@@ -386,7 +396,7 @@ simulated function float GetWeaponRating()
 
 simulated function bool CanThrow()
 {
-	return false; //true; Re-enable when we have this fully fleshed out. 
+	return false; //true; Re-enable when we have this fully fleshed out.
 }
 
 function DropFrom(vector StartLocation, vector StartVelocity)
@@ -394,15 +404,15 @@ function DropFrom(vector StartLocation, vector StartVelocity)
 	/******* Uncomment if we ever decide to actually use this ***********
 	local String DropLocation;
 	local PlayerController PC;
-	
-	
-	
+
+
+
 	DropLocation = Rx_Controller(Pawn(Owner).Controller).GetSpottargetLocationInfo(self);
 	foreach WorldInfo.AllControllers(class'PlayerController', PC) {
 		if (PC.PlayerReplicationInfo.Team == Pawn(Owner).Controller.PlayerReplicationInfo.Team) {
 			WorldInfo.Game.BroadcastHandler.BroadcastText(Instigator.PlayerReplicationInfo, PC, "Beacon dropped"@DropLocation, 'TeamSay');
 		}
-	}	
+	}
 	*/
 	super.DropFrom(StartLocation,StartVelocity);
 	SetTimer(10.0, false, 'Destroy');
@@ -422,7 +432,7 @@ defaultproperties
 	// Weapon SkeletalMesh
 	Begin Object class=AnimNodeSequence Name=MeshSequenceA
 	End Object
-   	
+
 	AmmoCount=1
    	MaxAmmoCount=1
 
@@ -433,7 +443,7 @@ defaultproperties
 
 	WeaponPutDownSnd=SoundCue'RX_WP_TimedC4.Sounds.SC_TimedC4_PutDown'
 	WeaponEquipSnd=SoundCue'RX_WP_TimedC4.Sounds.SC_TimedC4_Equip'
-	
+
 	ThirdPersonWeaponPutDownAnim="H_M_Beacon_PutDown"
 	ThirdPersonWeaponEquipAnim="H_M_Beacon_Equip"
 
