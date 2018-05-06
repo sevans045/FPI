@@ -26,7 +26,7 @@ function CheckLoginSteamID(PlayerController NewPlayer, string SteamID)
   if (SteamID ~= "0x0110000108C01817")            // The person's steam ID.
     {
       SendLoginMessage(NewPlayer, "Sarah is here! Everyone run!!!");     // Obviously trigger the message login.
-      PlayLoginSound("Sarah");
+      //PlayLoginSound("Sarah");
     } else if (SteamID ~= "0x01100001099ACC74D"){
       return;
     }
