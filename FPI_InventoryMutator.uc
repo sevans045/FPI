@@ -1,3 +1,13 @@
+/*
+ * This file is in the public domain, furnished "as is", without technical
+ * support, and with no warranty, express or implied, as to its usefulness for
+ * any purpose.
+ *
+ * Written by Sarah Evans <sarahevans045@gmail.com>
+ * Created for Fair Play Renegade-X Community
+ * This file contains source code from Renegade-X, with additional code.
+ */
+ 
 class FPI_InventoryMutator extends UTMutator;
 
 function bool CheckReplacement(Actor Other)
