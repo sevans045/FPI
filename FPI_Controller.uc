@@ -18,15 +18,26 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 	local int PlayerCount;
 	PlayerCount = `WorldInfoObject.Game.NumPlayers-1;
 
-	if(CharID == 0)	  // Is the item being purchased a beacon? Beacon ID is 0
+	if(CharID == 0)	// Is the item being purchased a beacon? Beacon ID is 0
+	{	  
+		`log("Someone's buying a beacon.");
 		if(PlayerCount < MinimumPlayersForSuperweapon)	// Is there less people than required by the config?
 		{
-			CTextMessage("[FPI] Not enough players for that.\nThere needs to be "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
+			CTextMessage("[FPI] Not enough players for that.\nThere needs to be more than "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
 			ClientPlaySound(SoundCue'FPI_FX.Sounds.S_AccessDenied');
 			`log("Someone just tried to purchase a beacon. Current players: " $ PlayerCount $ "/" $ MinimumPlayersForSuperweapon);
 			return;
-		} else if (CharID == 1 || CharID == 2) {
+		} else if (PlayerCount > MinimumPlayersForSuperweapon || PlayerCount == MinimumPlayersForSuperweapon)
+		{
 			if (ValidPTUse(PT))
-				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
+				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),0);
 		}
+		}
+
+	if(CharID == 1 || CharID == 2) 
+	{
+		`log("Someones buying something else");
+		if (ValidPTUse(PT))
+			Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
+	}
 }
