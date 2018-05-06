@@ -19,6 +19,7 @@ var FPI_Sys_Mutator SystemMutator;
 var config bool bEnableCreditMutator;
 var config bool bEnableLoginMessageMutator;
 var config bool bEnableServerTravelMutator;
+var config bool bEnableHeadshotMutator;
 
 function PostBeginPlay()
 {
