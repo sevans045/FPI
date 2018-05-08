@@ -57,7 +57,7 @@ exec function Donate(string PlayerName, int Credits)
 			ClientMessage("You can not donate to the enemy team.");
 		} else if (PRI.GetTeamNum() == self.GetTeamNum()){
 		DonateCredits(PRI.PlayerID, Credits);
-		ClientMessage("You donated " $ PRI.GetHumanReadableName() $ " " $ Credits $ " credits.")
+		ClientMessage("You donated " $ PRI.GetHumanReadableName() $ " " $ Credits $ " credits.");
 		}
 	else
 		ClientMessage(error);
