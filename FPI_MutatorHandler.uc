@@ -166,7 +166,6 @@ function CommanderReminder()
   {
     if (Rx_Controller(PC) != none && Rx_PRI(Rx_Controller(PC).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(PC).PlayerReplicationInfo).bGetIsCommander())
     {
-      `log("found a commander " $ PC.PlayerReplicationInfo.GetHumanReadableName() $ " " $ PC.GetTeamNum());
       if(PC.GetTeamNum() == 0)
       {
           GDIHasCommander = true;
@@ -177,7 +176,7 @@ function CommanderReminder()
           `log("Nod's commander is " $ PC.PlayerReplicationInfo.GetHumanReadableName());
       }
     }
-    }
+  }
       if(GDIHasCommander == false)
     {
       `log("No commander found for GDI");
@@ -186,8 +185,8 @@ function CommanderReminder()
     {
       `log("No commander found for Nod");
       MessageTeam(1, "You have no commander, vote for one.");
+    }
 }
-  }
 
 static function string GetCustomWeaponNames(UTWeapon ThisWeapon)
 {
