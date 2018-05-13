@@ -22,9 +22,9 @@ function InitThisMutator()
 
 function MHOnBuildingDestroyed(PlayerReplicationInfo Destroyer, Rx_Building_Team_Internals BuildingInternals, Rx_Building Building, class<DamageType> DamageType)
 {
-local Rx_Building thisBuilding;
+local Rx_Building_Refinery thisBuilding;
 
-  ForEach Rx_Game(`WorldInfoObject.Game).AllActors(class'Rx_Building',thisBuilding)
+  ForEach Rx_Game(`WorldInfoObject.Game).AllActors(class'Rx_Building_Refinery',thisBuilding)
   {
     if(Rx_Building_GDI_MoneyFactory(thisBuilding).IsDestroyed())
     {
