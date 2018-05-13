@@ -13,13 +13,14 @@ config(FPI);
 var FPI_CreditMutator CreditMutator;
 var FPI_LoginMessageMutator LoginMessageMutator;
 var FPI_ServerTravelMutator ServerTravelMutator;
+//var FPI_VeterancyMutator VeterancyMutator;
 var FPI_Sys_Mutator SystemMutator;
 //var FPI_AdminHandler FPIAdminHandler; // Don't need this, it's for commands.
 
 var config bool bEnableCreditMutator;
 var config bool bEnableLoginMessageMutator;
 var config bool bEnableServerTravelMutator;
-var config bool bEnableHeadshotMutator;
+//var config bool bEnableVeterancyMutator;
 
 function PostBeginPlay()
 {
@@ -83,7 +84,19 @@ function OnMatchStart()
        `log("[Mutator Handler] Server travel mutator was disabled via config. Not loading.");
        MessageAdmins("Not Initing Server Travel Mutator!", 'Red');
     }
-
+/*
+    if(bEnableVeterancyMutator == true)
+    VeterancyMutator = spawn(class'FPI_VeterancyMutator');
+      if ( VeterancyMutator != None )
+    {
+        VeterancyMutator.InitThisMutator();
+       `log("[Mutator Handler] Initing Veterancy Mutator");
+        MessageAdmins("Initing Veterancy Mutator!");
+    } else {
+       `log("[Mutator Handler] Veterancy mutator was disabled via config. Not loading.");
+       MessageAdmins("Not Initing Veterancy Mutator!", 'Red');
+    }
+*/
      SetTimer(90, true, 'CommanderReminder');
 }
 
@@ -103,7 +116,13 @@ function OnMatchEnd()
 function OnPlayerConnect(PlayerController NewPlayer,  string SteamID)
 {
     if(LoginMessageMutator != None)
-         LoginMessageMutator.MHOnPlayerConnect(NewPlayer, SteamID);
+      LoginMessageMutator.MHOnPlayerConnect(NewPlayer, SteamID);
+}
+
+function OnPlayerKill(Controller Killer, Controller Victim, Pawn KilledPawn, class<DamageType> damageType)
+{
+ // if(VeterancyMutator != None)
+  //  VeterancyMutator.MHOnPlayerKill(Controller Killer, Controller Victim, Pawn KilledPawn, class<DamageType> damageType);
 }
 
 function OnBuildingDestroyed(PlayerReplicationInfo Destroyer, Rx_Building_Team_Internals BuildingInternals, Rx_Building Building, class<DamageType> DamageType)
@@ -111,7 +130,7 @@ function OnBuildingDestroyed(PlayerReplicationInfo Destroyer, Rx_Building_Team_I
   `log("################################");
   `log("[Mutator Handler] OwO! It seems a building has died. Reporting this to the appropriate mutators!");
   `log("################################");
-  if ( ServerTravelMutator != None )
+  if(ServerTravelMutator != None)
     CreditMutator.MHOnBuildingDestroyed(Destroyer, BuildingInternals, Building, DamageType);
 }
 
