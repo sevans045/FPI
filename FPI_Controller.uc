@@ -11,35 +11,98 @@
 class FPI_Controller extends Rx_Controller
 config(FPI);
 
+var FPI_CommanderMenuHandler Com_Menu;
 var config int MinimumPlayersForSuperweapon;
+var config bool bConsiderBuildingCount;
 
 reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT PT)	// Called when someone attempts to purchase an item
 {
-	local int PlayerCount;
-	PlayerCount = `WorldInfoObject.Game.NumPlayers-1;
-
 	if(CharID == 0)	// Is the item being purchased a beacon? Beacon ID is 0
 	{	  
-		`log("Someone's buying a beacon.");
-		if(PlayerCount < MinimumPlayersForSuperweapon)	// Is there less people than required by the config?
+		if (CanPurchaseBeacon() == false)
 		{
 			CTextMessage("[FPI] Not enough players for that.\nThere needs to be more than "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
-			ClientPlaySound(SoundCue'FPI_FX.Sounds.S_AccessDenied');
-			`log("Someone just tried to purchase a beacon. Current players: " $ PlayerCount $ "/" $ MinimumPlayersForSuperweapon);
+			ClientPlaySound(SoundCue'FPI_FX.Sounds.S_AccessDenied');  // Play a nice little sound for them.
 			return;
-		} else if (PlayerCount > MinimumPlayersForSuperweapon || PlayerCount == MinimumPlayersForSuperweapon)
-		{
+		} else {
 			if (ValidPTUse(PT))
-				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),0);
+				Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
 		}
-		}
-
-	if(CharID == 1 || CharID == 2) 
-	{
-		`log("Someones buying something else");
+	} else {
 		if (ValidPTUse(PT))
 			Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
 	}
+}
+
+reliable server function bool CanPurchaseBeacon()
+{
+	local int AliveBuildings;
+	local int AllBuildings;
+	local int PlayerCount;
+	PlayerCount = `WorldInfoObject.Game.NumPlayers-1;
+
+	AliveBuildings = CountAliveBuildings();
+	AllBuildings   = CountAllBuildings();
+	`log(AliveBuildings @ AllBuildings);
+
+	if (AliveBuildings * 2 > AllBuildings && bConsiderBuildingCount == true)
+	{
+		return false;
+	} else if (MinimumPlayersForSuperweapon > PlayerCount)
+	{
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function int CountAliveBuildings()
+{
+    local Rx_Building_Team_Internals thisBuilding;
+    local Rx_Building_Techbuilding_Internals thisTBuilding;
+    local Rx_Building_Airstrip AirStrip;
+    local int AliveBuildings;
+
+    foreach class'WorldInfo'.static.GetWorldInfo().AllActors(class'Rx_Building_Team_Internals', thisBuilding)
+    {
+    if(thisBuilding.IsDestroyed() == false)
+      	AliveBuildings++;
+    }
+
+    foreach class'WorldInfo'.static.GetWorldInfo().AllActors(class'Rx_Building_Techbuilding_Internals', thisTBuilding)	// Because I am dumb and cant get ClassIsAChild to work or IsA to check if it's a tech building.
+    {
+    	AliveBuildings--;
+    }
+
+    foreach class'WorldInfo'.static.GetWorldInfo().AllActors(class'Rx_Building_Airstrip', AirStrip)	// I really hate looping through all these, but apparently the airstrip counts as 2. 
+    {
+    	AliveBuildings--;
+    }
+    return AliveBuildings;
+}
+
+function int CountAllBuildings()
+{
+    local Rx_Building_Team_Internals thisBuilding;
+    local Rx_Building_Techbuilding_Internals thisTBuilding;
+    local Rx_Building_Airstrip AirStrip;
+    local int AllBuildings;
+
+    foreach class'WorldInfo'.static.GetWorldInfo().AllActors(class'Rx_Building_Team_Internals', thisBuilding)
+    {
+        AllBuildings++;
+    }
+
+    foreach class'WorldInfo'.static.GetWorldInfo().AllActors(class'Rx_Building_Techbuilding_Internals', thisTBuilding)
+    {
+    	AllBuildings--;
+    }
+
+    foreach class'WorldInfo'.static.GetWorldInfo().AllActors(class'Rx_Building_Airstrip', AirStrip)	
+    {
+    	AllBuildings--;
+    }
+    return AllBuildings;
 }
 
 exec function DonateCredits(int playerID, float amount)
@@ -93,3 +156,25 @@ reliable server function ServerDonateCredits(int playerID, float amount)
 		}
 	}
 }
+/*
+function EnableCommanderMenu()
+{
+	
+	if(VoteHandler != none || Rx_GRI(WorldInfo.GRI).bEnableCommanders == false) return; 
+	
+	if(Com_Menu != none ) 
+	{
+		DestroyOldComMenu() ;
+		return; 
+	}
+
+	if(!bPlayerIsCommander())
+	{
+		CTextMessage("You are NOT a commander", 'Red'); 
+		return; 
+	}
+	
+	Com_Menu = new (self) class'FPI_CommanderMenuHandler';
+	Com_Menu.Enabled(self);
+}
+*/
