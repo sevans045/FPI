@@ -176,6 +176,7 @@ static function MessageTeam(int TeamID, string message)
   }
 }
 
+
 function CommanderReminder()
 {
   local PlayerController PC;
@@ -223,6 +224,7 @@ function Mutate(String MutateString, PlayerController Sender)
 {
   local PlayerController PC;
   local array<string> MutateStringSplit;
+  local FPI_Controller C;
 
     MutateStringSplit = SplitString ( MutateString, " ", true );
     if ( MutateStringSplit.Length == 0) return;
@@ -258,17 +260,20 @@ function Mutate(String MutateString, PlayerController Sender)
         //Sender.ClientMessage("1 = |" $ MutateStringSplit[1] $ "|");
         if ( MutateStringSplit[1] ~= "help" )
         {
-            MessageSpecific(Sender, "[FPI Admin] Commands: split_server", 'Red');
-        }else if (MutateStringSplit[1] ~= "split_server")
+            MessageSpecific(Sender, "[FPI Admin] Commands: split_server, laser, allowbeacons", 'Red');
+        } else if (MutateStringSplit[1] ~= "split_server")
         {
             ServerTravelMutator.FPIServerTravel();
         } else if (MutateStringSplit[1] ~= "laser")
         {
             Foreach WorldInfo.AllControllers(class'PlayerController', PC)
-  {
-    if (PC != None)
-        PC.ClientPlaySound(SoundCue'RX_Artic_033.Sounds.firinmalazah');
-  }
+        {
+            if (PC != None)
+              PC.ClientPlaySound(SoundCue'RX_Artic_033.Sounds.firinmalazah');
+        }
+        } else if (MutateStringSplit[1] ~= "allowbeacons")
+        {
+            //C.static.OverrideBeaconPurchasing();
         } else {
             MessageSpecific(Sender, "[FPI Admin] Unknown command", 'Red');
         }
