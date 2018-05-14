@@ -81,4 +81,8 @@ function UpdateWeapon(UTWeapon Weapon)
             AnimateReload(Weapon.WorldInfo.TimeSeconds - Rx_Weapon_Reloadable(Weapon).reloadBeginTime, Rx_Weapon_Reloadable(Weapon).currentReloadTime, AmmoBar);
         }
     }
+    if(Weapon.IsA('Rx_Weapon_RepairGun'))
+    {
+        AmmoInClipN.SetText("1337");
+    }
 }
