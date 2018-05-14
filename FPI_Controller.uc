@@ -11,9 +11,11 @@
 class FPI_Controller extends Rx_Controller
 config(FPI);
 
-var FPI_CommanderMenuHandler Com_Menu;
+//var FPI_CommanderMenuHandler Com_Menu;
 var config int MinimumPlayersForSuperweapon;
 var config bool bConsiderBuildingCount;
+
+var bool OverrideBeacons;
 
 reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT PT)	// Called when someone attempts to purchase an item
 {
@@ -45,15 +47,25 @@ reliable server function bool CanPurchaseBeacon()
 	AllBuildings   = CountAllBuildings();
 	`log(AliveBuildings @ AllBuildings);
 
-	if (AliveBuildings * 2 > AllBuildings && bConsiderBuildingCount == true)
+	if(OverrideBeacons == true)
 	{
-		return false;
+		return true;
 	} else if (MinimumPlayersForSuperweapon > PlayerCount)
 	{
 		return false;
-	} else {
+	} else if (PlayerCount == MinimumPlayersForSuperweapon || PlayerCount > MinimumPlayersForSuperweapon) {
 		return true;
+	} else if (AliveBuildings * 2 < AllBuildings && bConsiderBuildingCount == true)
+	{
+		return true;
+	} else {
+		return false;
 	}
+}
+
+static function OverrideBeaconPurchasing()
+{
+	//OverrideBeacons = true;
 }
 
 function int CountAliveBuildings()
@@ -178,3 +190,8 @@ function EnableCommanderMenu()
 	Com_Menu.Enabled(self);
 }
 */
+
+DefaultProperties
+{
+	OverrideBeacons = false;
+}
