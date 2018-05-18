@@ -86,3 +86,4 @@ function UpdateWeapon(UTWeapon Weapon)
         AmmoInClipN.SetText("1337");
     }
 }
+
