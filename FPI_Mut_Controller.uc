@@ -12,19 +12,17 @@
 var repnotify float ServerFPS;
 var float PrivateServerFPS;
 var repnotify int CurrentActors;
-var repnotify int CurrentVehiclesNod;
-var repnotify int CurrentVehiclesGDI;
-var repnotify int CurrentVehiclesUnoccupied;
 var float PrivateServerDeltaTime;
 var repnotify float ServerDeltaTime;
-var repnotify int ServerGDICredits;
-var repnotify int ServerNodCredits;
 var repnotify int StaffMembersIngame;
+var repnotify int GDICP;
+var repnotify int NodCP;
+var repnotify int MaxCP;
 
 replication
 {
 	if(bNetDirty || bNetInitial)
-		ServerFPS,CurrentActors,CurrentVehiclesNod,CurrentVehiclesGDI,CurrentVehiclesUnoccupied,ServerDeltaTime,ServerGDICredits,ServerNodCredits,StaffMembersIngame;
+		ServerFPS,CurrentActors,ServerDeltaTime,StaffMembersIngame,GDICP,NodCP,MaxCP;
 }
 
 simulated function PostBeginPlay()
@@ -34,10 +32,9 @@ simulated function PostBeginPlay()
 
 function CollectData()
 {
-	local int counter, cvnod, cvgdi, cvun, gdicredits, nodcredits, adminingame;
+	local int counter, adminingame, gcp, ncp, mcp;
 	local Actor thisActor;
 	local Controller c;
-	local Rx_Vehicle thisVehicle;
 	
 	if(`WorldInfoObject.NetMode != NM_DedicatedServer)
 		return;
@@ -47,34 +44,6 @@ function CollectData()
 	{
 		counter ++;
 	}
-	
-	// Vehicles in game
-	foreach Rx_Game(`WorldInfoObject.Game).AllActors(class'Rx_Vehicle', thisVehicle)
-	{			
-		if ( thisVehicle.Driver != None )
-		{
-			if ( thisVehicle.Driver.GetTeamNum() == TEAM_GDI )
-				cvgdi++;
-			else
-				cvnod++;
-		} else {
-			cvun++;
-		}
-	}
-	
-	// Player stats
-	foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
-	{
-		if ( Rx_PRI(c.PlayerReplicationInfo) != None )
-		{
-			if ( c.GetTeamNum() == TEAM_GDI )
-			{
-				gdicredits += Rx_PRI(c.PlayerReplicationInfo).GetCredits();
-			} else {
-				nodcredits += Rx_PRI(c.PlayerReplicationInfo).GetCredits();
-			}
-		}
-	}
 
 	// Ingame admins stats
   	foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
@@ -83,16 +52,19 @@ function CollectData()
  		    if ( Rx_Controller(c) != none && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo).bAdmin )
     	   	 	adminingame++;
   	}
-	
+
+  	// Commander point counts
+  	gcp = Rx_TeamInfo(WorldInfo.GRI.Teams[0]).GetCommandPoints();
+	ncp = Rx_TeamInfo(WorldInfo.GRI.Teams[1]).GetCommandPoints();
+	mcp = Rx_TeamInfo(WorldInfo.GRI.Teams[0]).GetMaxCommandPoints();
+
 	CurrentActors = counter;
-	CurrentVehiclesGDI = cvgdi;
-	CurrentVehiclesNod = cvnod;
-	CurrentVehiclesUnoccupied = cvun;
 	ServerFPS = PrivateServerFPS;
 	ServerDeltaTime = PrivateServerDeltaTime;
-	ServerGDICredits = gdicredits;
-	ServerNodCredits = nodcredits;
 	StaffMembersIngame = adminingame;
+	GDICP = gcp;
+	NodCP = ncp;
+	MaxCP = mcp;
 }
 
 function OnTick(float DeltaTime)

@@ -11,8 +11,8 @@
  class FPI_HUD extends Rx_HUD;
 
 var FPI_HUD_AdminComponent FPI_HUDAdminComponent;
+var FPI_HUD_CPoints FPI_HUDCPoints;
 var FPI_MutatorHandler MutatorHandler;
-//var private CanvasIcon;
 var int DefaultTargettingRangex;
 
 var CanvasIcon Neutral_Recruit;
@@ -40,18 +40,21 @@ function CreateHudCompoenents()
 	`log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 	FPI_HUDAdminComponent = new class'FPI_HUD_AdminComponent';
+	FPI_HUDCPoints 		  = new class'FPI_HUD_CPoints';	
 }
 
 function UpdateHudCompoenents(float DeltaTime, Rx_HUD HUD)
 {
 	super.UpdateHudCompoenents(DeltaTime, HUD);
 	if ( FPI_HUDAdminComponent != None ) FPI_HUDAdminComponent.Update(DeltaTime, HUD);
+	if ( FPI_HUDCPoints != None ) FPI_HUDCPoints.Update(DeltaTime, HUD);
 }
 
 function DrawHudCompoenents()
 {
 	super.DrawHudCompoenents();
 	if ( FPI_HUDAdminComponent != None ) FPI_HUDAdminComponent.Draw();
+	if ( FPI_HUDCPoints != None ) FPI_HUDCPoints.Draw();
 }
 
 
@@ -84,11 +87,9 @@ function Message( PlayerReplicationInfo PRI, coerce string Msg, name MsgType, op
 			fMsg = "<font color='" $HostColor$"'>" $cName$"</font>: <font color='#FFFFFF'>"$CleanHTMLMessage(Msg)$"</font>";
 		else if (PRI.Team.GetTeamNum() == TEAM_GDI){
 					fMsg = "<font color='" $GDIColor $"'>" $cName $"</font>: ";
-					MutatorHandler.MHChatMessage(Msg, PRI);
 				}
 		else if (PRI.Team.GetTeamNum() == TEAM_NOD){
 					fMsg = "<font color='" $NodColor $"'>" $cName $"</font>: ";
-					MutatorHandler.MHChatMessage(Msg, PRI);
 				}
 
 		if ( cName != "Host" ) {
