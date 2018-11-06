@@ -1,10 +1,7 @@
-/*
- * This file is in the public domain, furnished "as is", without technical
- * support, and with no warranty, express or implied, as to its usefulness for
- * any purpose.
- *
- * Written by Sarah Evans <sarahevans045@gmail.com>
- * Created for Fair Play Renegade-X Community
+/* Copyright (C) taisho.xyz - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Sarah Evans <sarahevans045@gmail.com>, 2017-2018
  */
 
 class FPI_Weapon_RepairGun extends RX_Weapon_RepairGun;

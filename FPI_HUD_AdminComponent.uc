@@ -1,10 +1,7 @@
-/*
- * This file is in the public domain, furnished "as is", without technical
- * support, and with no warranty, express or implied, as to its usefulness for
- * any purpose.
- *
- * Written by Sarah Evans <sarahevans045@gmail.com>
- * Created for Fair Play Renegade-X Community
+/* Copyright (C) taisho.xyz - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Sarah Evans <sarahevans045@gmail.com>, 2017-2018
  */
 
 class FPI_HUD_AdminComponent extends Rx_Hud_Component;
@@ -56,7 +53,7 @@ simulated function DrawServerFPS()
 	} else {
 		//ServerFPS,CurrentActors,CurrentVehiclesNod,CurrentVehiclesGDI,CurrentVehiclesUnoccupied,ServerDeltaTime
 		
-		hudMessage = "[FPI Admin Panel]\n";
+		hudMessage = "[Sarah's Admin Panel]\n";
 		fpsMessage = FPI_MutController.ServerFPS == 0 ? "Running As Client Or No Data!" : string(FPI_MutController.ServerFPS);
 		hudMessage $= "  SFPS: " $ fpsMessage $ " | Delta Time: " $ FPI_MutController.ServerDeltaTime $ " | Actors: " $ string(FPI_MutController.CurrentActors) $ "\n";
 		//hudMessage $= "  NodVeh: " $ string(FPI_MutController.CurrentVehiclesNod) $ " | GDIVeh: " $ string(FPI_MutController.CurrentVehiclesGDI) $ " | UnOcVeh: " $ string(FPI_MutController.CurrentVehiclesUnoccupied) $ " | Tot: " $ string((FPI_MutController.CurrentVehiclesNod+FPI_MutController.CurrentVehiclesGDI+FPI_MutController.CurrentVehiclesUnoccupied)) $ "\n";
@@ -65,4 +62,3 @@ simulated function DrawServerFPS()
 		Canvas.DrawText(hudMessage);
 	}
 }
-

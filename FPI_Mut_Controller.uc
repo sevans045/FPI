@@ -1,10 +1,7 @@
-/*
- * This file is in the public domain, furnished "as is", without technical
- * support, and with no warranty, express or implied, as to its usefulness for
- * any purpose.
- *
- * Written by Sarah Evans <sarahevans045@gmail.com>
- * Created for Fair Play Renegade-X Community
+/* Copyright (C) taisho.xyz - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Sarah Evans <sarahevans045@gmail.com>, 2017-2018
  */
 
  class FPI_Mut_Controller extends ReplicationInfo;
@@ -15,14 +12,11 @@ var repnotify int CurrentActors;
 var float PrivateServerDeltaTime;
 var repnotify float ServerDeltaTime;
 var repnotify int StaffMembersIngame;
-var repnotify int GDICP;
-var repnotify int NodCP;
-var repnotify int MaxCP;
 
 replication
 {
 	if(bNetDirty || bNetInitial)
-		ServerFPS,CurrentActors,ServerDeltaTime,StaffMembersIngame,GDICP,NodCP,MaxCP;
+		ServerFPS,CurrentActors,ServerDeltaTime,StaffMembersIngame;
 }
 
 simulated function PostBeginPlay()
@@ -32,9 +26,9 @@ simulated function PostBeginPlay()
 
 function CollectData()
 {
-	local int counter, adminingame, gcp, ncp, mcp;
+	local int counter, adminingame;
 	local Actor thisActor;
-	local Controller c;
+	local Rx_Controller c;
 	
 	if(`WorldInfoObject.NetMode != NM_DedicatedServer)
 		return;
@@ -46,25 +40,16 @@ function CollectData()
 	}
 
 	// Ingame admins stats
-  	foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
+  	foreach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Rx_Controller', c)
   	{
-    	if ( c != None )
- 		    if ( Rx_Controller(c) != none && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo).bAdmin )
-    	   	 	adminingame++;
+ 		if (c.PlayerReplicationInfo.bAdmin)
+    	   	 adminingame++;
   	}
-
-  	// Commander point counts
-  	gcp = Rx_TeamInfo(WorldInfo.GRI.Teams[0]).GetCommandPoints();
-	ncp = Rx_TeamInfo(WorldInfo.GRI.Teams[1]).GetCommandPoints();
-	mcp = Rx_TeamInfo(WorldInfo.GRI.Teams[0]).GetMaxCommandPoints();
 
 	CurrentActors = counter;
 	ServerFPS = PrivateServerFPS;
 	ServerDeltaTime = PrivateServerDeltaTime;
 	StaffMembersIngame = adminingame;
-	GDICP = gcp;
-	NodCP = ncp;
-	MaxCP = mcp;
 }
 
 function OnTick(float DeltaTime)

@@ -1,10 +1,7 @@
-/*
- * This file is in the public domain, furnished "as is", without technical
- * support, and with no warranty, express or implied, as to its usefulness for
- * any purpose.
- *
- * Written by Sarah Evans <sarahevans045@gmail.com>
- * Created for Fair Play Renegade-X Community
+/* Copyright (C) taisho.xyz - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Sarah Evans <sarahevans045@gmail.com>, 2017-2018
  */
 
 class FPI_CreditMutator extends Rx_Mutator
@@ -28,17 +25,17 @@ local Rx_Building_Refinery thisBuilding;
   {
     if(Rx_Building_GDI_MoneyFactory(thisBuilding).IsDestroyed())
     {
-      setTimer(TickTime, true, 'CreditTickGDI');
+      SetTimer(TickTime, true, nameof(CreditTickGDI));
       `log("[Credit Mutator] GDI refinery has died. Starting credit tick for GDI.");
     } else if(Rx_Building_Nod_MoneyFactory(thisBuilding).IsDestroyed())
     {
-      setTimer(TickTime, true, 'CreditTickNod');
+      SetTimer(TickTime, true, nameof(CreditTickNod));
       `log("[Credit Mutator] Nod refinery has died. Starting credit tick for Nod.");
     }
   }
 }
 
-function CreditTickGDI()
+reliable server function CreditTickGDI()
 {
   local PlayerReplicationInfo PRI;
 
@@ -50,7 +47,7 @@ function CreditTickGDI()
   }
 }
 
-function CreditTickNod()
+reliable server function CreditTickNod()
 {
   local PlayerReplicationInfo PRI;
 

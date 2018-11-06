@@ -1,21 +1,36 @@
-/*
- * This file is in the public domain, furnished "as is", without technical
- * support, and with no warranty, express or implied, as to its usefulness for
- * any purpose.
- *
- * Written by Sarah Evans <sarahevans045@gmail.com>
- * Created for Fair Play Renegade-X Community
- * This file contains source code from Renegade-X, with additional code.
+/* Copyright (C) taisho.xyz - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Sarah Evans <sarahevans045@gmail.com>, 2017-2018
  */
  
 class FPI_Controller extends Rx_Controller
 config(FPI);
 
-//var FPI_CommanderMenuHandler Com_Menu;
 var config int MinimumPlayersForSuperweapon;
 var config bool bConsiderBuildingCount;
+var config string MutatorVersion;
 
-var bool OverrideBeacons;
+reliable client function WriteMutatorVersion(string Version)
+{
+	MutatorVersion = Version;
+	SaveConfig();
+}
+
+reliable client function ReportVersion()
+{
+	Mutate("fpi report"@MutatorVersion);
+}
+
+function TimerLoop()
+{
+	SetTimer(90, true, 'ReportTime');
+}
+
+reliable client function ReportTime()
+{
+	Mutate("fpi time"@WorldInfo.GRI.ElapsedTime);
+}
 
 reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT PT)	// Called when someone attempts to purchase an item
 {
@@ -24,7 +39,6 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 		if (CanPurchaseBeacon() == false)
 		{
 			CTextMessage("[FPI] Not enough players for that.\nThere needs to be more than "$MinimumPlayersForSuperweapon$" players.",'Red');    // Notify our purchaser that they can not purchase that.
-			ClientPlaySound(SoundCue'FPI_FX.Sounds.S_AccessDenied');  // Play a nice little sound for them.
 			return;
 		} else {
 			if (ValidPTUse(PT))
@@ -36,36 +50,58 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 	}
 }
 
+function PlayEndGameSound()
+{
+	if(GetTeamNum() == 1 && WorldInfo.GRI.Winner.GetTeamNum() != GetTeamNum() && CheckForDJLaptop() == true)
+	{
+		if (Rx_HUD(myHUD) != none && Rx_HUD(myHUD).JukeBox != none)
+			Rx_HUD(myHUD).JukeBox.Stop();
+		return;
+	}
+	else
+		super.PlayEndGameSound();
+}
+
+function bool CheckForDJLaptop()
+{
+	local PlayerReplicationInfo PRI;
+    local array<PlayerReplicationInfo> PRIArray;
+    local int I;
+	 PRIArray = WorldInfo.GRI.PRIArray;
+
+        foreach WorldInfo.GRI.PRIArray(PRI)
+        {
+            if(Rx_PRI(PRI) == None)
+                PRIArray.RemoveItem(PRI);
+        }
+
+        for (I = 0; I < PRIArray.Length; I++)
+            {
+                if(PRIArray[I] != None && PRIArray[I].GetHumanReadableName() == "djlaptop" && PRIArray[I].GetTeamNum() == 1)
+                {
+                    return true;
+                } else {
+                	return false;
+                }
+            }
+}
+
 reliable server function bool CanPurchaseBeacon()
 {
-	local int AliveBuildings;
-	local int AllBuildings;
-	local int PlayerCount;
+	local int AliveBuildings, AllBuildings, PlayerCount;
 	PlayerCount = `WorldInfoObject.Game.NumPlayers-1;
 
 	AliveBuildings = CountAliveBuildings();
 	AllBuildings   = CountAllBuildings();
-	`log(AliveBuildings @ AllBuildings);
 
-	if(OverrideBeacons == true)
-	{
-		return true;
-	} else if (MinimumPlayersForSuperweapon > PlayerCount)
-	{
+	if (MinimumPlayersForSuperweapon > PlayerCount)
 		return false;
-	} else if (PlayerCount == MinimumPlayersForSuperweapon || PlayerCount > MinimumPlayersForSuperweapon) {
+	else if (PlayerCount == MinimumPlayersForSuperweapon || PlayerCount > MinimumPlayersForSuperweapon)
 		return true;
-	} else if (AliveBuildings * 2 < AllBuildings && bConsiderBuildingCount == true)
-	{
+	else if (AliveBuildings * 2 < AllBuildings && bConsiderBuildingCount)
 		return true;
-	} else {
+	else
 		return false;
-	}
-}
-
-static function OverrideBeaconPurchasing()
-{
-	//OverrideBeacons = true;
 }
 
 function int CountAliveBuildings()
@@ -115,83 +151,4 @@ function int CountAllBuildings()
     	AllBuildings--;
     }
     return AllBuildings;
-}
-
-exec function DonateCredits(int playerID, float amount)
-{
-	ServerDonateCredits(playerID, amount);
-}
-
-exec function Donate(string PlayerName, int Credits)
-{
-	local PlayerReplicationInfo PRI;
-	local string error;
-	PRI = ParsePlayer(PlayerName, error);
-	if (PRI != None)
-		if(PRI.GetTeamNum() != self.GetTeamNum()){
-			ClientMessage("You can not donate to the enemy team.");
-		} else if (PRI.GetTeamNum() == self.GetTeamNum()){
-		DonateCredits(PRI.PlayerID, Credits);
-		ClientMessage("You donated " $ PRI.GetHumanReadableName() $ " " $ Credits $ " credits.");
-		}
-	else
-		ClientMessage(error);
-}	
-
-reliable server function ServerDonateCredits(int playerID, float amount)
-{
-	local int i;
-
-	if(Worldinfo.GRI.ElapsedTime < Rx_Game(Worldinfo.Game).DonationsDisabledTime)
-	{
-		ClientMessage("Donations are disallowed for the first " $ Rx_Game(Worldinfo.Game).DonationsDisabledTime $ " seconds.");	
-		return;
-	}
-
-	if (amount < 0 || Rx_PRI(PlayerReplicationInfo).GetCredits() < amount) return; // not enough money
-	else if (amount == 0) amount = Rx_PRI(PlayerReplicationInfo).GetCredits();
-
-	for (i = 0; i < WorldInfo.GRI.PRIArray.Length; i++)
-	{
-		if (WorldInfo.GRI.PRIArray[i].PlayerID == playerID)
-		{
-			Rx_PRI(WorldInfo.GRI.PRIArray[i]).AddCredits(amount);
-			Rx_PRI(PlayerReplicationInfo).RemoveCredits(amount);
-			`LogRxPub("GAME" `s "Donated;" `s amount `s "to" `s `PlayerLog(WorldInfo.GRI.PRIArray[i]) `s "by" `s `PlayerLog(PlayerReplicationInfo));
-			if (Rx_Controller(WorldInfo.GRI.PRIArray[i].Owner) != none)
-			{
-				Rx_Controller(WorldInfo.GRI.PRIArray[i].Owner).ClientMessage(PlayerReplicationInfo.PlayerName $ " donated you " $ amount $" credits.");
-				Rx_Controller(WorldInfo.GRI.PRIArray[i].Owner).ClientPlaySound(SoundCue'FPI_FX.Sounds.S_Yo');
-			}
-
-			return;
-		}
-	}
-}
-/*
-function EnableCommanderMenu()
-{
-	
-	if(VoteHandler != none || Rx_GRI(WorldInfo.GRI).bEnableCommanders == false) return; 
-	
-	if(Com_Menu != none ) 
-	{
-		DestroyOldComMenu() ;
-		return; 
-	}
-
-	if(!bPlayerIsCommander())
-	{
-		CTextMessage("You are NOT a commander", 'Red'); 
-		return; 
-	}
-	
-	Com_Menu = new (self) class'FPI_CommanderMenuHandler';
-	Com_Menu.Enabled(self);
-}
-*/
-
-DefaultProperties
-{
-	OverrideBeacons = false;
 }
