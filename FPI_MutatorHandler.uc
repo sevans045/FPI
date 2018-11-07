@@ -17,27 +17,22 @@ var bool          ShouldSplit;
 var config string ServerMutatorVersion;
 
 /** List of SteamIDs authorised for Administator. */
-var config Array<string> AdministratorSteamIDs;
+var config array<string> AdministratorSteamIDs;
 
 /** List of SteamIDs authorised for Moderator. */
-var config Array<string> ModeratorSteamIDs;
+var config array<string> ModeratorSteamIDs;
 
 function PostBeginPlay()
 {
     local int i;
-    local FPI_Controller c;
 
     ShouldSplit = false;
-
-    FPI_Game(`WorldInfoObject.Game).SetMaxPlayers(1);
-
-    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'FPI_Controller', c)
-        c.myHud.Message(none, "This server is running using Sarah's FPI mutator package.", 'Say');
 
     For (i=0; i<AdministratorSteamIDs.Length; ++i)
         AdministratorSteamIDs[i] = class'FPI_AccessControl'.static.FixSteamID(AdministratorSteamIDs[i]);
     For (i=0; i<ModeratorSteamIDs.Length; ++i)
         ModeratorSteamIDs[i] = class'FPI_AccessControl'.static.FixSteamID(ModeratorSteamIDs[i]);
+
     SaveConfig();
 }
 
@@ -46,35 +41,37 @@ function InitMutator(string Options, out string ErrorMessage)
     SystemMutator = spawn(class'FPI_Sys_Mutator');
 
     if (SystemMutator != None)
-      SystemMutator.InitThisMutator();
+        SystemMutator.InitThisMutator();
 }
 
 simulated function Tick(float DeltaTime) // Tick for our Admin HUD
 {
-  if (SystemMutator != None)
-    SystemMutator.OnTick(DeltaTime);
+    if (SystemMutator != None)
+        SystemMutator.OnTick(DeltaTime);
 }
 
 /***************** Mutator Hooks *****************/
 
 function OnMatchStart()
 {
-  MessageAll("Welcome to Fair Play Inc!\nPlease review the rules and have fun.\nDon't forget to vote for a commander!");
+    MessageAll("Welcome to Fair Play Inc!\nPlease review the rules and have fun.\nDon't forget to vote for a commander!");  
 
-  if (bEnableCreditMutator)
-  CreditMutator = spawn(class'FPI_CreditMutator');
-    if (CreditMutator != None)
-    {
-       CreditMutator.InitThisMutator();
-       `log("[Mutator Handler] Initing Credit Mutator");
-    }
+    if (bEnableCreditMutator)
+    CreditMutator = spawn(class'FPI_CreditMutator');
+
+      if (CreditMutator != None)
+      {
+        CreditMutator.InitThisMutator();
+        `log("[Mutator Handler] Initing Credit Mutator");
+      } 
 
     if (bEnableServerTravelMutator)
-    ServerTravelMutator = spawn(class'FPI_ServerTravelMutator');
-      if (ServerTravelMutator != None)
+        ServerTravelMutator = spawn(class'FPI_ServerTravelMutator');
+
+    if (ServerTravelMutator != None)
     {
         ServerTravelMutator.InitThisMutator();
-        `log("[Mutator Handler] Initing Server Travel Mutator");
+         `log("[Mutator Handler] Initing Server Travel Mutator");
     }
 
     SetTimer(90, true, 'CommanderReminder');
@@ -94,10 +91,13 @@ function OnPlayerConnect(PlayerController NewPlayer,  string SteamID)
     FPI_Controller(NewPlayer).ReportVersion();
     FPI_Controller(NewPlayer).TimerLoop();
 
-    if(IsAdminSteamID(SteamID))
-        NewPlayer.PlayerReplicationInfo.bAdmin = true;
-    if(IsModSteamID(SteamID))
-        FPI_PRI(NewPlayer.PlayerReplicationInfo).bModeratorOnly = true;
+    if (Len(SteamID) > 1)
+    {
+        if(IsAdminSteamID(SteamID))
+            NewPlayer.PlayerReplicationInfo.bAdmin = true;
+        if(IsModSteamID(SteamID))
+            FPI_PRI(NewPlayer.PlayerReplicationInfo).bModeratorOnly = true;
+    }
 }
 
 function OnBuildingDestroyed(PlayerReplicationInfo Destroyer, Rx_Building_Team_Internals BuildingInternals, Rx_Building Building, class<DamageType> DamageType)
@@ -128,23 +128,23 @@ function bool IsModSteamID(String ID)
 
 static function MessageAll(string message)
 {
-    local Controller c;
-    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
+    local FPI_Controller c;
+    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'FPI_Controller', c)
     {
         if (c != None)
-            if (Rx_Controller(c) != None && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None)
-                Rx_Controller(c).CTextMessage(message, 'Green', 120);
+            if (Rx_PRI(c.PlayerReplicationInfo) != None)
+                c.CTextMessage(message, 'Green', 120);
     }
 }
 
 static function MessageAdmins(string message, optional name MsgColor = 'Green')
 {
-    local Controller c;
-    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
+    local FPI_Controller c;
+    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'FPI_Controller', c)
     {
         if (c != None)
-            if (Rx_Controller(c) != none && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(c).PlayerReplicationInfo).bAdmin)
-                Rx_Controller(c).CTextMessage("[FPI Admin]"@message, MsgColor, 120);
+            if (c.PlayerReplicationInfo != None && FPI_PRI(c.PlayerReplicationInfo).bAdmin)
+                c.CTextMessage("[FPI Admin]"@message, MsgColor, 120);
     }
 }
 
@@ -157,28 +157,27 @@ static function MessageSpecific(PlayerController receiver, string message, optio
 
 static function MessageTeam(int TeamID, string message)
 {
-    local Controller c;
-    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'Controller', c)
+    local FPI_Controller c;
+    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'FPI_Controller', c)
     {
         if (c != None && c.GetTeamNum() == TeamID)
-          if (Rx_Controller(c) != none)
-            Rx_Controller(c).CTextMessage("[FPI]"@message, 'Red', 300.0, 1.5);
+            c.CTextMessage("[FPI]"@message, 'Red', 300.0, 1.5);
     }
 }
 
 
 function CommanderReminder()
 {
-    local PlayerController PC;
+    local FPI_Controller c;
     local bool NodHasCommander, GDIHasCommander;
     
-    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'PlayerController', PC)
+    ForEach class'WorldInfo'.static.GetWorldInfo().AllControllers(class'FPI_Controller', c)
     {
-        if (Rx_Controller(PC) != none && Rx_PRI(Rx_Controller(PC).PlayerReplicationInfo) != None && Rx_PRI(Rx_Controller(PC).PlayerReplicationInfo).bGetIsCommander())
+        if (c != none && Rx_PRI(c.PlayerReplicationInfo) != None && Rx_PRI(c.PlayerReplicationInfo).bGetIsCommander())
         {
-            if (PC.GetTeamNum() == 0)
+            if (c.GetTeamNum() == 0)
                 GDIHasCommander = true;
-            else if (PC.GetTeamNum() == 1)
+            else if (c.GetTeamNum() == 1)
                 NodHasCommander = true;
         }
     }
@@ -203,7 +202,6 @@ static function string GetCustomWeaponNames(UTWeapon ThisWeapon)
 
 function Mutate(String MutateString, PlayerController Sender)
 {
-  local PlayerController PC;
   local Rx_PRI PlayerPRI;
   local string errorMessage;
   local array<string> MutateStringSplit;

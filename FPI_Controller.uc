@@ -11,6 +11,13 @@ var config int MinimumPlayersForSuperweapon;
 var config bool bConsiderBuildingCount;
 var config string MutatorVersion;
 
+simulated function PostBeginPlay()
+{
+    Super.PostBeginPlay();
+
+    Rx_HUD(myHud).Message(none, "This server is running using Sarah's FPI mutator package.", 'Say');
+}
+
 reliable client function WriteMutatorVersion(string Version)
 {
 	MutatorVersion = Version;
@@ -48,42 +55,6 @@ reliable server function ServerPurchaseItem(int CharID, Rx_BuildingAttachment_PT
 		if (ValidPTUse(PT))
 			Rx_Game(WorldInfo.Game).GetPurchaseSystem().PurchaseItem(self,GetTeamNum(),CharID);
 	}
-}
-
-function PlayEndGameSound()
-{
-	if(GetTeamNum() == 1 && WorldInfo.GRI.Winner.GetTeamNum() != GetTeamNum() && CheckForDJLaptop() == true)
-	{
-		if (Rx_HUD(myHUD) != none && Rx_HUD(myHUD).JukeBox != none)
-			Rx_HUD(myHUD).JukeBox.Stop();
-		return;
-	}
-	else
-		super.PlayEndGameSound();
-}
-
-function bool CheckForDJLaptop()
-{
-	local PlayerReplicationInfo PRI;
-    local array<PlayerReplicationInfo> PRIArray;
-    local int I;
-	 PRIArray = WorldInfo.GRI.PRIArray;
-
-        foreach WorldInfo.GRI.PRIArray(PRI)
-        {
-            if(Rx_PRI(PRI) == None)
-                PRIArray.RemoveItem(PRI);
-        }
-
-        for (I = 0; I < PRIArray.Length; I++)
-            {
-                if(PRIArray[I] != None && PRIArray[I].GetHumanReadableName() == "djlaptop" && PRIArray[I].GetTeamNum() == 1)
-                {
-                    return true;
-                } else {
-                	return false;
-                }
-            }
 }
 
 reliable server function bool CanPurchaseBeacon()

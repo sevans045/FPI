@@ -8,10 +8,7 @@
 
 var int DefaultTargettingRangex;
 
-var CanvasIcon Neutral_Recruit;
-var CanvasIcon Neutral_Veteran;
-var CanvasIcon Neutral_Elite;
-var CanvasIcon Neutral_Heroic;
+var CanvasIcon Neutral_Recruit, Neutral_Veteran, Neutral_Elite, Neutral_Heroic;
 
 function DrawNewScorePanel()
 {
@@ -74,10 +71,7 @@ function DrawNewScorePanel()
 				Canvas.DrawText(Rx_TeamInfo(WorldInfo.GRI.Teams[FirstTeamID]).GetTeamName(), false,,,FontInfo);
 				
 				if(bDrawAdditionalPlayerInfo)
-				{
 					DrawHarvesterHealth(FirstTeamID,YL,FontInfo);		
-				}
-				
 				
 				Canvas.DrawColor = Rx_TeamInfo(WorldInfo.GRI.Teams[FirstTeamID]).GetTeamColor();
 				Canvas.SetPos(DrawStartX[1] + StrLeng("Score") - StrLeng(Rx_TeamInfo(WorldInfo.GRI.Teams[FirstTeamID]).GetRenScore()), YL);

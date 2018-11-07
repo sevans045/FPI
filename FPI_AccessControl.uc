@@ -148,13 +148,13 @@ function AddAdmin( PlayerController Caller, PlayerReplicationInfo NewAdmin, bool
 
 	SteamID = OnlineSub.UniqueNetIdToString(NewAdmin.UniqueId);
 
-	if ( SteamID == `BlankSteamID )
+	if (SteamID == `BlankSteamID)
 	{
 		Caller.ClientMessage(NewAdmin.Name@"is not using Steam.");
 		return;
 	}
 
-	if ( IsAdminSteamID(SteamID) )
+	if (IsAdminSteamID(SteamID))
 	{
 		Caller.ClientMessage(NewAdmin.Name@"is already an Administrator.");
 		return;
@@ -162,7 +162,7 @@ function AddAdmin( PlayerController Caller, PlayerReplicationInfo NewAdmin, bool
 
 	if (AsModerator)
 	{
-		if ( IsModSteamID(SteamID) )
+		if (IsModSteamID(SteamID))
 		{
 			Caller.ClientMessage(NewAdmin.Name@"is already a Moderator.");
 			return;

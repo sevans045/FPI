@@ -13,7 +13,7 @@ function Update(float DeltaTime, Rx_HUD HUD)
 	local FPI_Mut_Controller thisClass;
 	super.Update(DeltaTime, HUD);
 	
-	if ( FPI_MutController == None )
+	if (FPI_MutController == None)
 	{
 		// Find our controller.
 		foreach RenxHud.PlayerOwner.AllActors(class'FPI_Mut_Controller', thisClass)
@@ -22,9 +22,8 @@ function Update(float DeltaTime, Rx_HUD HUD)
 			break;
 		}
 	}
-	
-	// If we're still none, then oops?
-	if ( FPI_MutController == None )
+
+	if (FPI_MutController == None)
 		return;
 }
 
@@ -35,10 +34,10 @@ function Draw()
 
 simulated function DrawServerFPS()
 {
-	local float X,Y;
-	local string hudMessage,fpsMessage;
+	local float X, Y;
+	local string hudMessage, fpsMessage;
 	
-	if ( RenxHud.PlayerOwner != None && RenxHud.PlayerOwner.PlayerReplicationInfo != None && !RenxHud.PlayerOwner.PlayerReplicationInfo.bAdmin )
+	if (RenxHud.PlayerOwner != None && RenxHud.PlayerOwner.PlayerReplicationInfo != None && !RenxHud.PlayerOwner.PlayerReplicationInfo.bAdmin)
 		return;
 	
 	X = RenxHud.Canvas.SizeX*0.005;
@@ -47,12 +46,10 @@ simulated function DrawServerFPS()
 	Canvas.SetDrawColor(0,255,0,255);
 	Canvas.Font = Font'RenXHud.Font.RadioCommand_Medium';
 	
-	if ( FPI_MutController == None )
-	{
-		Canvas.DrawText("FPI Admin HUD Loading...");
-	} else {
-		//ServerFPS,CurrentActors,CurrentVehiclesNod,CurrentVehiclesGDI,CurrentVehiclesUnoccupied,ServerDeltaTime
-		
+	if (FPI_MutController == None)
+	
+		Canvas.DrawText("Sarah's Admin HUD Loading...");
+	else {
 		hudMessage = "[Sarah's Admin Panel]\n";
 		fpsMessage = FPI_MutController.ServerFPS == 0 ? "Running As Client Or No Data!" : string(FPI_MutController.ServerFPS);
 		hudMessage $= "  SFPS: " $ fpsMessage $ " | Delta Time: " $ FPI_MutController.ServerDeltaTime $ " | Actors: " $ string(FPI_MutController.CurrentActors) $ "\n";

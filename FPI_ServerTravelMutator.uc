@@ -29,6 +29,7 @@ function FPIServerTravel()
     PlayerCount = `WorldInfoObject.Game.NumPlayers-1;
     NextMap = string(WorldInfo.GetPackageName());
     NextMapGuid = GetPackageGuid(name(NextMap));
+    FPI_Game(`WorldInfoObject.Game).SetMaxPlayers(40);
     
     if(bAutomaticallySplitServer == true)
       	{

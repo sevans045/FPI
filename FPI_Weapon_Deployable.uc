@@ -17,7 +17,6 @@ function OvermineBroadcast()
 	foreach WorldInfo.AllControllers(class'Rx_Controller', PC)
 		if (Instigator.GetTeamNum() == PC.GetTeamNum())
 			PC.ClientMessage(Message, 'EVA');
-		Rx_Controller(Instigator.Controller).ClientPlaySound(NotificationSound);
 		Rx_Controller(Instigator.Controller).CTextMessage("[FPI] You're overmining!",'Red',300.0,1.5);
 		Rx_Controller(Instigator.Controller).CTextMessage("[FPI] Do you know what you're doing?",'Red',300.0,1.5);
 
@@ -26,5 +25,4 @@ function OvermineBroadcast()
 
 DefaultProperties
 {
-	NotificationSound = SoundCue'FPI_FX.Sounds.S_Yo'
 }
